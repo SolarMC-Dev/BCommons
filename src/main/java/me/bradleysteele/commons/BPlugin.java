@@ -20,6 +20,7 @@ import com.google.common.collect.Sets;
 import me.bradleysteele.commons.register.Registrable;
 import me.bradleysteele.commons.resource.DefaultResourceProvider;
 import me.bradleysteele.commons.resource.ResourceProvider;
+import me.bradleysteele.commons.resource.handler.YamlResourceHandler;
 import me.bradleysteele.commons.util.logging.ConsoleLog;
 import me.bradleysteele.commons.util.logging.StaticLog;
 import me.bradleysteele.commons.util.reflect.Reflection;
@@ -54,6 +55,7 @@ public class BPlugin extends JavaPlugin {
     public void onLoad() {
         description = getDescription();
         resourceProvider = new DefaultResourceProvider(this);
+        resourceProvider.addResourceHandler(new YamlResourceHandler());
 
         console.setFormat("[&6" + (description.getPrefix() != null ? description.getPrefix() : description.getName())
                 + "&r] [{bcommons_log_level}]: {bcommons_log_message}");
