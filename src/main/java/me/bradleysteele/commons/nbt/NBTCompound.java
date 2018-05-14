@@ -16,6 +16,7 @@
 
 package me.bradleysteele.commons.nbt;
 
+import me.bradleysteele.commons.util.reflect.NBTReflection;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.Set;
