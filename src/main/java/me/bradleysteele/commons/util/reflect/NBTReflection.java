@@ -14,10 +14,11 @@
  * limitations under the License.
  */
 
-package me.bradleysteele.commons.nbt;
+package me.bradleysteele.commons.util.reflect;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
+import me.bradleysteele.commons.nbt.NBTCompound;
 import me.bradleysteele.commons.util.logging.StaticLog;
 import me.bradleysteele.commons.util.reflect.Reflection;
 import org.bukkit.Bukkit;
