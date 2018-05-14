@@ -1,0 +1,5 @@
+name: ${project.name}
+author: Bradley Steele (Ibiza)
+description: ${project.description}
+version: ${project.version}
+main: me.bradleysteele.commons.BCommons
