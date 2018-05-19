@@ -6,7 +6,7 @@
 
     <groupId>me.bradleysteele</groupId>
     <artifactId>BCommons</artifactId>
-    <version>0.1.0-RELEASE</version>
+    <version>0.1.1-RELEASE</version>
 
     <url>https://bradleysteele.me</url>
     <description>Provides reusable and maintainable Spigot components.</description>
