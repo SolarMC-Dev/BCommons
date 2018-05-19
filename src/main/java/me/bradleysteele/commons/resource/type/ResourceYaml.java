@@ -151,6 +151,10 @@ public class ResourceYaml extends AbstractResource {
         }
     }
 
+    public YamlConfiguration getRootConfigurationSection() {
+        return (YamlConfiguration) root;
+    }
+
     public ConfigurationSection getConfigurationSection(String path) {
         return root.getConfigurationSection(path);
     }

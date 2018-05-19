@@ -41,7 +41,7 @@ public class YamlResourceHandler implements ResourceHandler {
     @Override
     public void save(Resource resource) {
         try {
-            ((YamlConfiguration) resource.getRoot()).save(resource.getFile());
+            ((ResourceYaml) resource).getRootConfigurationSection().save(resource.getFile());
         } catch (IOException e) {
             StaticLog.error("An IOException occurred when trying to save [&c" + resource.getReference() + "&r]:");
             StaticLog.exception(e);
