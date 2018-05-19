@@ -20,32 +20,53 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import me.bradleysteele.commons.BPlugin;
 import me.bradleysteele.commons.register.Registrable;
+import me.bradleysteele.commons.util.Preconditions;
 
 import java.util.*;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 /**
- * @param <T> store type.
+ * The {@link BStore} class maps keys to values of a specific type using the
+ * {@link Map} interface. Keys do not have a specific type. {@link String}
+ * type keys will be converted to lowercase using
+ * {@link String#toLowerCase(Locale)} before stored.
+ * <p>
+ * A map cannot contain duplicate keys; each key can map to at most one value.
+ * <p>
+ * Both keys and values cannot be {@code null} and are checked with the
+ * {@link Preconditions} class before insertion.
+ *
+ * @param <T> the store type.
  *
  * @author Bradley Steele
+ * @see java.util.Map
+ * @see java.util.HashMap
  */
 public class BStore<T> implements Registrable {
 
     private static final Random random = new Random();
+    private static final Locale LOCALE = Locale.ENGLISH;
 
     protected BPlugin plugin;
     private Map<Object, T> store = Maps.newHashMap();
 
+
     @Override
-    public void register() {
+    public void register() {}
 
-    }
-
+    /**
+     * @param key the key to check.
+     * @return if the key is present in the store.
+     */
     public boolean exists(Object key) {
         return key != null && store.containsKey(key);
     }
 
+    /**
+     * @param key the key to check.
+     * @return if the key is present in the store.
+     */
     public boolean exists(String key) {
         return key != null && store.containsKey(key.toLowerCase());
     }
@@ -65,7 +86,8 @@ public class BStore<T> implements Registrable {
         return values.get(random.nextInt(values.size()));
     }
 
-    public T retrieveRandom(T... exclude) {
+    @SafeVarargs
+    public final T retrieveRandom(T... exclude) {
         return retrieveRandom(Arrays.asList(exclude));
     }
 
@@ -94,23 +116,45 @@ public class BStore<T> implements Registrable {
         return store.keySet();
     }
 
+    /**
+     * @param key   key with which the specified value is to be associated.
+     * @param value value to be associated with the specified key.
+     */
     public void store(Object key, T value) {
         store.put(key, value);
     }
 
+    /**
+     * Converts the provided key to lowercase before storing in order to
+     * keep the store organised.
+     *
+     * @param key   key with which the specified value is to be associated.
+     * @param value value to be associated with the specified key.
+     * @throws NullPointerException if either parameters are {@code null}.
+     */
     public void store(String key, T value) {
-        if (key != null) {
-            store.put(key.toLowerCase(), value);
-        }
+        Preconditions.nonNull(key, "key cannot be null.");
+        Preconditions.nonNull(value, "value cannot be null, use Store#drop to remove values.");
+
+        store.put(key.toLowerCase(), value);
     }
 
+    /**
+     * @param key key with which the specified value is to be remove.
+     *
+     * @throws NullPointerException if the provided key is {@code null}.
+     */
     public void drop(Object key) {
+        Preconditions.nonNull(key);
+
         store.remove(key);
     }
 
+    /**
+     * @param key key with which the specified value is to be remove.
+     */
     public void drop(String key) {
-        if (key != null) {
-            store.remove(key.toLowerCase());
-        }
+        Preconditions.nonNull(key);
+        drop((Object) key.toLowerCase(LOCALE));
     }
 }
