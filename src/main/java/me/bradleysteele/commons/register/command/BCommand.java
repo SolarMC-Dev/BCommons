@@ -47,7 +47,7 @@ public abstract class BCommand implements Registrable, BCommandExecutor {
     private BCommand parent;
 
     @Override
-    public void register() {
+    public final void register() {
         // Update children which were set in the constructor, as
         // the plugin is injected after the constructor.
         children.forEach(child -> {
@@ -66,7 +66,7 @@ public abstract class BCommand implements Registrable, BCommandExecutor {
         children.forEach(BCommand::register);
     }
 
-    void called(CommandSender sender, String[] args) {
+    final void called(CommandSender sender, String[] args) {
         if (!children.isEmpty() && args.length > 0) {
             for (BCommand child : children) {
                 if (child.getAliases().stream().anyMatch(alias -> alias.equalsIgnoreCase(args[0]))) {
