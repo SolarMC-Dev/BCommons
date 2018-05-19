@@ -30,5 +30,5 @@ public interface ResourceLoadResultHandler {
     /**
      * @param e exception thrown when attempting to load.
      */
-    void onFailure(Exception e);
+    default void onFailure(Exception e) {}
 }
