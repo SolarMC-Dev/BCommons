@@ -26,7 +26,6 @@ import java.io.*;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.concurrent.Callable;
 
 /**
  * @author Bradley Steele
@@ -75,19 +74,14 @@ public class DefaultResourceProvider implements ResourceProvider {
     }
 
     @Override
-    public Callable<Void> loadResource(ResourceReference reference, ResourceLoadResultHandler resultHandler) {
-        return () -> {
-            Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
-                try {
-                    resultHandler.onComplete(loadResource(reference));
-                } catch (Exception e) {
-                    resultHandler.onFailure(e);
-                }
-            });
-
-            // void callable, so doesn't matter what we return.
-            return null;
-        };
+    public void loadResource(ResourceReference reference, ResourceLoadResultHandler resultHandler) {
+        Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
+            try {
+                resultHandler.onComplete(loadResource(reference));
+            } catch (Exception e) {
+                resultHandler.onFailure(e);
+            }
+        });
     }
 
     @Override

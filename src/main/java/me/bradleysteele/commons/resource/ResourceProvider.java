@@ -40,7 +40,7 @@ public interface ResourceProvider {
      * @param reference     resource's reference containing the file path and extension.
      * @param resultHandler result handler.
      */
-    Callable<Void> loadResource(ResourceReference reference, ResourceLoadResultHandler resultHandler);
+    void loadResource(ResourceReference reference, ResourceLoadResultHandler resultHandler);
 
     /**
      * Saves a resource using the appropriate handlers.
