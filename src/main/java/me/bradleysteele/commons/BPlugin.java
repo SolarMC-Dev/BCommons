@@ -35,8 +35,6 @@ import java.util.stream.Stream;
 /**
  * The {@link BPlugin} is responsible for loading and enabling components
  * within the library.
- * <p>
- * Do not override {@code onEnable} or {@code onDisable}.
  *
  * @author Bradley Steele
  */
@@ -52,7 +50,7 @@ public class BPlugin extends JavaPlugin {
     protected PluginDescriptionFile description;
 
     @Override
-    public void onLoad() {
+    public final void onLoad() {
         description = getDescription();
         resourceProvider = new DefaultResourceProvider(this);
         resourceProvider.addResourceHandler(new YamlResourceHandler());
@@ -64,7 +62,7 @@ public class BPlugin extends JavaPlugin {
     }
 
     @Override
-    public void onEnable() {
+    public final void onEnable() {
         try {
             enable();
         } catch (Exception e) {
@@ -78,7 +76,7 @@ public class BPlugin extends JavaPlugin {
     }
 
     @Override
-    public void onDisable() {
+    public final void onDisable() {
         registers.forEach(Registrable::onUnregister);
 
         disable();
