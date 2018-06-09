@@ -20,6 +20,7 @@ import com.google.common.collect.Lists;
 import me.bradleysteele.commons.BPlugin;
 import me.bradleysteele.commons.register.Registrable;
 import me.bradleysteele.commons.util.Players;
+import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;
@@ -43,6 +44,7 @@ public abstract class BCommand implements Registrable, BCommandExecutor {
     private List<String> aliases = Lists.newArrayList();
     private List<BCommand> children = Lists.newArrayList();
 
+    private boolean sync = true;
     private BCommandExecutor executor = this;
     private BCommand parent;
 
@@ -93,7 +95,11 @@ public abstract class BCommand implements Registrable, BCommandExecutor {
         }
 
         // All tests past, execute.
-        executor.execute(sender, args);
+        if (isSync()) {
+            executor.execute(sender, args);
+        } else {
+            Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> executor.execute(sender, args));
+        }
     }
 
     /**
@@ -156,6 +162,13 @@ public abstract class BCommand implements Registrable, BCommandExecutor {
      */
     public List<BCommand> getChildren() {
         return children;
+    }
+
+    /**
+     * @return {@code true} if the command is ran on the main thread.
+     */
+    public boolean isSync() {
+        return sync;
     }
 
     /**
@@ -277,6 +290,13 @@ public abstract class BCommand implements Registrable, BCommandExecutor {
             child.parent = parent;
             children.add(child);
         }
+    }
+
+    /**
+     * @param sync if the command is to be run on the main thread.
+     */
+    public void setSync(boolean sync) {
+        this.sync = sync;
     }
 
     /**
