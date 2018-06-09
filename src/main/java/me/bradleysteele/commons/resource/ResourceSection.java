@@ -16,6 +16,7 @@
 
 package me.bradleysteele.commons.resource;
 
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -50,6 +51,8 @@ public interface ResourceSection extends ResourceItem {
     float getFloat(String path, float def);
 
     double getDouble(String path, double def);
+
+    <T> List<T> getList(String path, Class<T> clazz);
 
     ResourceSection getSection(String path);
 
@@ -97,5 +100,9 @@ public interface ResourceSection extends ResourceItem {
 
     default double getDouble(String path) {
         return getDouble(path, 0.0D);
+    }
+
+    default List<String> getStringList(String path) {
+        return getList(path, String.class);
     }
 }
