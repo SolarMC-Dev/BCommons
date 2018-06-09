@@ -17,13 +17,15 @@
 package me.bradleysteele.commons.resource.type;
 
 import me.bradleysteele.commons.resource.AbstractResource;
-import me.bradleysteele.commons.resource.ResourceReference;
 import me.bradleysteele.commons.resource.ResourceHandler;
+import me.bradleysteele.commons.resource.ResourceReference;
 import me.bradleysteele.commons.resource.ResourceSection;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -130,6 +132,12 @@ public class ResourceYaml extends AbstractResource {
         return root.getDouble(path, def);
     }
 
+    @SuppressWarnings("unchecked")
+    @Override
+    public <T> List<T> getList(String path, Class<T> clazz) {
+        return (List<T>) root.getList(path, new ArrayList<T>());
+    }
+
     @Override
     public ResourceSection getSection(String path) {
         if (!contains(path)) {
@@ -151,19 +159,19 @@ public class ResourceYaml extends AbstractResource {
         }
     }
 
-    public YamlConfiguration getRootConfigurationSection() {
-        return (YamlConfiguration) root;
-    }
-
-    public ConfigurationSection getConfigurationSection(String path) {
-        return root.getConfigurationSection(path);
-    }
-
     public ConfigurationSection createSection(String path, Map<?, ?> keyValues) {
         return root.createSection(path, keyValues);
     }
 
     public ConfigurationSection createSection(String path) {
         return root.createSection(path);
+    }
+
+    public YamlConfiguration getRootConfigurationSection() {
+        return (YamlConfiguration) root;
+    }
+
+    public ConfigurationSection getConfigurationSection(String path) {
+        return root.getConfigurationSection(path);
     }
 }
