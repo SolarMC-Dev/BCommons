@@ -24,15 +24,25 @@ import java.util.Set;
  */
 public interface ResourceSection extends ResourceItem {
 
+    // Logic
+
     boolean isRoot();
 
     boolean contains(String path);
 
+    // Getters
+
+    String getName();
+
+    String getCurrentPath();
+
     ResourceSection getRoot();
 
-    Set<String> getKeys(boolean deep);
+    ResourceSection getParent();
 
     Object get(String path, Class<?> type, Object def);
+
+    Set<String> getKeys(boolean deep);
 
     String getString(String path, String def);
 
@@ -56,14 +66,18 @@ public interface ResourceSection extends ResourceItem {
 
     ResourceSection getSection(String path);
 
+    // Setters
+
     void set(String path, Object object);
 
-    default Set<String> getKeys() {
-        return getKeys(false);
-    }
+    // Defaults
 
     default Object get(String path, Class<?> type) {
         return get(path, type, null);
+    }
+
+    default Set<String> getKeys() {
+        return getKeys(false);
     }
 
     default String getString(String path) {

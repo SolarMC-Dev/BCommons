@@ -56,8 +56,23 @@ public class ResourceYaml extends AbstractResource {
     }
 
     @Override
+    public String getName() {
+        return root.getName();
+    }
+
+    @Override
+    public String getCurrentPath() {
+        return root.getCurrentPath();
+    }
+
+    @Override
     public ResourceSection getRoot() {
         return new ResourceYaml(this, root.getRoot());
+    }
+
+    @Override
+    public ResourceSection getParent() {
+        return new ResourceYaml(this, root.getParent());
     }
 
     @Override
