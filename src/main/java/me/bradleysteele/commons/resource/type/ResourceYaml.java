@@ -56,6 +56,15 @@ public class ResourceYaml extends AbstractResource {
     }
 
     @Override
+    public ResourceSection createSection(String name) {
+        if (contains(name)) {
+            return getSection(name);
+        }
+
+        return new ResourceYaml(this, root.createSection(name));
+    }
+
+    @Override
     public String getName() {
         return root.getName();
     }
@@ -176,10 +185,6 @@ public class ResourceYaml extends AbstractResource {
 
     public ConfigurationSection createSection(String path, Map<?, ?> keyValues) {
         return root.createSection(path, keyValues);
-    }
-
-    public ConfigurationSection createSection(String path) {
-        return root.createSection(path);
     }
 
     public YamlConfiguration getRootConfigurationSection() {

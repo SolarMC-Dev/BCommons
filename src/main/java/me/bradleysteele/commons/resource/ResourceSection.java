@@ -30,6 +30,8 @@ public interface ResourceSection extends ResourceItem {
 
     boolean contains(String path);
 
+    ResourceSection createSection(String name);
+
     // Getters
 
     String getName();
