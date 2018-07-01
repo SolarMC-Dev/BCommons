@@ -62,7 +62,10 @@ public class DefaultResourceProvider implements ResourceProvider {
             plugin.getConsole().error("An IOException occurred when generating resource defaults for [&c" + reference.getPath() + "&r]:");
             plugin.getConsole().exception(e);
         } catch (NullPointerException e) {
-            plugin.getConsole().error("Failed to load resource defaults for: &e" + reference.getPath() + "&r.");
+            // plugin.getConsole().error("Failed to load resource defaults for: &e" + reference.getPath() + "&r.");
+            // Temporarily ignored.
+            // TODO: create way of loading a resource which is not stored in
+            // TODO: the compiled jar.
         }
 
         Resource resource = getResourceHandler(reference.getExtension())
