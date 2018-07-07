@@ -18,9 +18,7 @@ package me.bradleysteele.commons.util.reflect;
 
 import me.bradleysteele.commons.util.logging.StaticLog;
 
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
+import java.lang.reflect.*;
 import java.util.Arrays;
 
 /**
@@ -33,23 +31,38 @@ import java.util.Arrays;
  */
 public final class Reflection {
 
+    // Prevent us from creating a new empty class/object every time the method is called.
+    private static final Class<?>[] CLASSES = new Class<?>[] {};
+    private static final Object[] OBJECTS = new Object[] {};
+
     // Suppresses default constructor.
     private Reflection() {}
 
     /**
      * Attempts to create an instance of the given class.
      *
-     * @param clazz class that we're creating an instance of.
+     * @param clazz class to create an instance of.
      * @param <T>   class type.
      * @return an initialised class object.
      */
+    public static <T> T newInstance(Class<T> clazz) {
+        return newInstance(clazz, CLASSES);
+    }
+
+    /**
+     * @param clazz          class to create an instance of.
+     * @param parameterTypes constructor parameter types.
+     * @param initargs       constructor arguments objects.
+     * @param <T>            class type.
+     * @return an initialised class object.
+     */
     @SuppressWarnings("unchecked")
-    public static <T> T newInstance(Class<?> clazz) {
+    public static <T> T newInstance(Class<T> clazz, Class<?>[] parameterTypes, Object... initargs) {
         T instance = null;
 
         try {
-            instance = (T) clazz.newInstance();
-        } catch (InstantiationException | IllegalAccessException e) {
+            instance = (T) getConstructor(clazz, parameterTypes).newInstance(initargs);
+        } catch (IllegalAccessException | InstantiationException | InvocationTargetException e) {
             StaticLog.exception(e);
         }
 
@@ -74,6 +87,24 @@ public final class Reflection {
         return clazz;
     }
 
+    // Getters: Constructor
+
+    /**
+     * @param clazz          class containing the constructor.
+     * @param parameterTypes parameter types of the constructor.
+     * @return the class's constructor with the matching parameter types.
+     */
+    public static <T> Constructor<T> getConstructor(Class<T> clazz, Class<?>... parameterTypes) {
+        Constructor<T> constructor = null;
+
+        try {
+            constructor = clazz.getDeclaredConstructor(parameterTypes);
+        } catch (NoSuchMethodException e) {
+            StaticLog.exception(e);
+        }
+
+        return constructor;
+    }
 
     // Getters: Field
 
@@ -99,7 +130,6 @@ public final class Reflection {
         Class<?> c = clazz;
 
         while (c != null && c != Object.class) {
-
             if (hasField(c, name)) {
                 try {
                     field = c.getDeclaredField(name);
@@ -150,10 +180,6 @@ public final class Reflection {
 
 
     // Getters: Method
-
-    // Prevent us from creating a new empty class/object every time the method is called.
-    private static final Class<?>[] CLASSES = new Class<?>[] { };
-    private static final Object[] OBJECTS = new Object[] { };
 
     /**
      * @param clazz          class containing the method.
