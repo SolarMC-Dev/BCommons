@@ -19,6 +19,7 @@ package me.bradleysteele.commons.itemstack;
 import com.google.common.collect.Lists;
 import me.bradleysteele.commons.nbt.NBTItemStack;
 import me.bradleysteele.commons.util.Messages;
+import me.bradleysteele.commons.util.reflect.Reflection;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -67,16 +68,22 @@ public final class ItemStackBuilder {
 
     public ItemStack build() {
         ItemStack item = new ItemStack(material, amount, durability);
-
-        // NBTs must be applied BEFORE meta is changed.
-        nbtAppliers.forEach(applier -> applier.apply(item));
-
         ItemMeta meta = item.getItemMeta();
+
         meta.setDisplayName(displayName);
         meta.setLore(lore);
-        meta.setUnbreakable(unbreakable);
+
+        if (Reflection.hasMethod(ItemMeta.class, "setUnbreakable", boolean.class)) {
+            meta.setUnbreakable(unbreakable);
+        }
 
         item.setItemMeta(meta);
+
+        // NBTs must be applied AFTER meta is applied.
+        for (Applier applier : nbtAppliers) {
+            item = applier.apply(item);
+        }
+
         return item;
     }
 
