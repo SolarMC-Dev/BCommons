@@ -33,6 +33,10 @@ public final class ItemStacks {
         return new ItemStackBuilder(material);
     }
 
+    public static ItemStackBuilder builder(ItemStack item) {
+        return new ItemStackBuilder(item);
+    }
+
     public static ItemStackBuilder builder() {
         return builder(Material.AIR);
     }
