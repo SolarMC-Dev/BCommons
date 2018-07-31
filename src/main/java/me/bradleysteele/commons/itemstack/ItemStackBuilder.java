@@ -21,6 +21,7 @@ import me.bradleysteele.commons.nbt.NBTItemStack;
 import me.bradleysteele.commons.util.Messages;
 import me.bradleysteele.commons.util.reflect.Reflection;
 import org.bukkit.Material;
+import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
@@ -36,13 +37,14 @@ public final class ItemStackBuilder {
     private int amount = 1;
     private short durability = 0;
 
-    // NBT
-    private List<Applier> nbtAppliers = Lists.newArrayList();
-
     // Meta
     private String displayName;
     private List<String> lore = Lists.newArrayList();
     private boolean unbreakable = false;
+    private List<ItemFlag> itemFlags = Lists.newArrayList();
+
+    // NBT
+    private List<Applier> nbtAppliers = Lists.newArrayList();
 
     /**
      * @param material item's material.
@@ -76,6 +78,8 @@ public final class ItemStackBuilder {
         if (Reflection.hasMethod(ItemMeta.class, "setUnbreakable", boolean.class)) {
             meta.setUnbreakable(unbreakable);
         }
+
+        meta.addItemFlags(itemFlags.toArray(new ItemFlag[0]));
 
         item.setItemMeta(meta);
 
@@ -124,6 +128,11 @@ public final class ItemStackBuilder {
 
     public ItemStackBuilder withUnbreakable(boolean unbreakable) {
         this.unbreakable = unbreakable;
+        return this;
+    }
+
+    public ItemStackBuilder withItemFlag(ItemFlag flag) {
+        itemFlags.add(flag);
         return this;
     }
 
