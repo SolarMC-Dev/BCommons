@@ -27,7 +27,6 @@ import java.util.Arrays;
  * returned.
  *
  * @author Bradley Steele
- * @version 1.0
  */
 public final class Reflection {
 
@@ -56,12 +55,11 @@ public final class Reflection {
      * @param <T>            class type.
      * @return an initialised class object.
      */
-    @SuppressWarnings("unchecked")
     public static <T> T newInstance(Class<T> clazz, Class<?>[] parameterTypes, Object... initargs) {
         T instance = null;
 
         try {
-            instance = (T) getConstructor(clazz, parameterTypes).newInstance(initargs);
+            instance = getConstructor(clazz, parameterTypes).newInstance(initargs);
         } catch (IllegalAccessException | InstantiationException | InvocationTargetException e) {
             StaticLog.exception(e);
         }
