@@ -19,6 +19,8 @@ package me.bradleysteele.commons.itemstack;
 import me.bradleysteele.commons.nbt.NBTItemStack;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.inventory.meta.SkullMeta;
 
 /**
  * @author Bradley Steele
@@ -37,5 +39,17 @@ public final class ItemStacks {
 
     public static NBTItemStack toNBTItemStack(ItemStack item) {
         return new NBTItemStack(item);
+    }
+
+    public static ItemStack skullOf(String player) {
+        ItemStack item = builder(Material.SKULL_ITEM)
+                .withDurability((short) 3)
+                .build();
+
+        SkullMeta meta = (SkullMeta) item.getItemMeta();
+        meta.setOwner(player);
+
+        item.setItemMeta(meta);
+        return item;
     }
 }
