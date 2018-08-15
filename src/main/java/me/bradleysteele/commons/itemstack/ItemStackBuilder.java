@@ -30,7 +30,7 @@ import java.util.List;
 /**
  * @author Bradley Steele
  */
-public final class ItemStackBuilder {
+public class ItemStackBuilder {
 
     // Stack
     private Material material;
@@ -64,8 +64,11 @@ public final class ItemStackBuilder {
         withAmount(item.getAmount())
             .withDurability(item.getDurability())
             .withDisplayName(meta.getDisplayName())
-            .withLore(meta.getLore())
-            .withUnbreakable(meta.isUnbreakable());
+            .withLore(meta.getLore());
+
+        if (Reflection.hasMethod(ItemMeta.class, "setUnbreakable", boolean.class)) {
+            withUnbreakable(meta.isUnbreakable());
+        }
     }
 
     public ItemStack build() {
@@ -208,6 +211,10 @@ public final class ItemStackBuilder {
 
     public boolean isUnbreakable() {
         return unbreakable;
+    }
+
+    protected List<Applier> getNbtAppliers() {
+        return nbtAppliers;
     }
 
     interface Applier {
