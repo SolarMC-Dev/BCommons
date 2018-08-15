@@ -29,6 +29,8 @@ public final class ItemStacks {
 
     private ItemStacks() {}
 
+    // Builders
+
     public static ItemStackBuilder builder(Material material) {
         return new ItemStackBuilder(material);
     }
@@ -41,19 +43,25 @@ public final class ItemStacks {
         return builder(Material.AIR);
     }
 
+    public static SkullBuilder skullBuilder(String owner) {
+        return new SkullBuilder(owner);
+    }
+
+    public static SkullBuilder skullBuilder() {
+        return skullBuilder(null);
+    }
+
+    // Converters
+
     public static NBTItemStack toNBTItemStack(ItemStack item) {
         return new NBTItemStack(item);
     }
 
+    // Util
+
     public static ItemStack skullOf(String player) {
-        ItemStack item = builder(Material.SKULL_ITEM)
-                .withDurability((short) 3)
+        return skullBuilder()
+                .withOwner(player)
                 .build();
-
-        SkullMeta meta = (SkullMeta) item.getItemMeta();
-        meta.setOwner(player);
-
-        item.setItemMeta(meta);
-        return item;
     }
 }
