@@ -31,4 +31,13 @@ public final class Inventories {
     public static void setItem(Inventory inventory, ItemStack item, int... slots) {
         Arrays.stream(slots).forEach(slot -> inventory.setItem(slot, item.clone()));
     }
+
+    public static void setRow(Inventory inventory, ItemStack item, int row) {
+        int rowStart = row * 9;
+        int rowEnd = rowStart + 8;
+
+        for (int slot = rowStart; slot <= rowEnd; slot++) {
+            inventory.setItem(slot, item.clone());
+        }
+    }
 }
