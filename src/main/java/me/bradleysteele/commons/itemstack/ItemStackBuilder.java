@@ -64,7 +64,7 @@ public class ItemStackBuilder {
         withAmount(item.getAmount())
             .withDurability(item.getDurability())
             .withDisplayName(meta.getDisplayName())
-            .withLore(meta.getLore());
+            .withLore(meta.hasLore() ? meta.getLore() : Lists.newArrayList());
 
         if (Reflection.hasMethod(ItemMeta.class, "setUnbreakable", boolean.class)) {
             withUnbreakable(meta.isUnbreakable());
