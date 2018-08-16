@@ -37,6 +37,26 @@ public final class Players {
 
     private Players() {}
 
+    public static String apostrophiseName(String name) {
+        if (name.endsWith("s") || name.endsWith("z")) {
+            return name + "'";
+        }
+
+        return name + "'s";
+    }
+
+    public static String apostrophiseName(Player player) {
+        return apostrophiseName(player.getName());
+    }
+
+    public static String apostrophiseName(OfflinePlayer player) {
+        return apostrophiseName(player.getName());
+    }
+
+    public static String apostrophiseName(CommandSender sender) {
+        return apostrophiseName(sender.getName());
+    }
+
     /**
      * Colours then sends the message to the player.
      *
@@ -136,6 +156,14 @@ public final class Players {
      * @param player the player we're checking.
      * @return if the player is online.
      */
+    public static boolean isOnline(Player player) {
+        return player != null && player.isOnline();
+    }
+
+    /**
+     * @param player the player we're checking.
+     * @return if the player is online.
+     */
     public static boolean isOnline(OfflinePlayer player) {
         return player != null && player.isOnline();
     }
@@ -223,5 +251,13 @@ public final class Players {
         }
 
         return player;
+    }
+
+    /**
+     * @param uuid player's uuid.
+     * @return the player matching the uuid.
+     */
+    public static OfflinePlayer getOfflinePlayer(UUID uuid) {
+        return Bukkit.getOfflinePlayer(uuid);
     }
 }
