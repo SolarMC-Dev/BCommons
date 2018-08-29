@@ -16,7 +16,9 @@
 
 package me.bradleysteele.commons.inventory;
 
+import org.bukkit.Bukkit;
 import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.Arrays;
@@ -27,6 +29,13 @@ import java.util.Arrays;
 public final class Inventories {
 
     private Inventories() {}
+
+    public static Inventory clone(Inventory inventory, InventoryHolder holder) {
+        Inventory inv = Bukkit.createInventory(holder, inventory.getSize(), inventory.getTitle());
+        inv.setContents(inventory.getContents().clone());
+
+        return inv;
+    }
 
     public static void setItem(Inventory inventory, ItemStack item, int... slots) {
         Arrays.stream(slots).forEach(slot -> inventory.setItem(slot, item.clone()));
