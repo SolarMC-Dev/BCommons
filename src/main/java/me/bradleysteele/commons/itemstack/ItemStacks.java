@@ -19,8 +19,12 @@ package me.bradleysteele.commons.itemstack;
 import me.bradleysteele.commons.nbt.NBTItemStack;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
-import org.bukkit.inventory.meta.SkullMeta;
+import org.bukkit.util.io.BukkitObjectInputStream;
+import org.bukkit.util.io.BukkitObjectOutputStream;
+import org.yaml.snakeyaml.external.biz.base64Coder.Base64Coder;
+
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 
 /**
  * @author Bradley Steele
@@ -63,5 +67,81 @@ public final class ItemStacks {
         return skullBuilder()
                 .withOwner(player)
                 .build();
+    }
+
+    // Serialize
+
+    public static String serializeItems(ItemStack[] items) {
+        try {
+            ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+            BukkitObjectOutputStream dataOutput = new BukkitObjectOutputStream(outputStream);
+
+            // Write the size of the inventory
+            dataOutput.writeInt(items.length);
+
+            // Save every element in the list
+            for (ItemStack item : items) {
+                dataOutput.writeObject(item);
+            }
+
+            // Serialize the array
+            dataOutput.close();
+            return Base64Coder.encodeLines(outputStream.toByteArray());
+        } catch (Exception e) {
+            // Ignored
+        }
+
+        return null;
+    }
+
+    public static String serializeItem(ItemStack item) {
+        try {
+            ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+            BukkitObjectOutputStream dataOutput = new BukkitObjectOutputStream(outputStream);
+
+            dataOutput.writeObject(item);
+            dataOutput.close();
+
+            return Base64Coder.encodeLines(outputStream.toByteArray());
+        } catch (Exception e) {
+            // Ignored
+        }
+
+        return null;
+    }
+
+    public static ItemStack[] deserializeItems(String data) {
+        try {
+            ByteArrayInputStream inputStream = new ByteArrayInputStream(Base64Coder.decodeLines(data));
+            BukkitObjectInputStream dataInput = new BukkitObjectInputStream(inputStream);
+            ItemStack[] items = new ItemStack[dataInput.readInt()];
+
+            // Read the serialized inventory
+            for (int i = 0; i < items.length; i++) {
+                items[i] = (ItemStack) dataInput.readObject();
+            }
+
+            dataInput.close();
+            return items;
+        } catch (Exception e) {
+            // Ignored
+        }
+
+        return null;
+    }
+
+    public static ItemStack deserializeItem(String data) {
+        try {
+            ByteArrayInputStream inputStream = new ByteArrayInputStream(Base64Coder.decodeLines(data));
+            BukkitObjectInputStream dataInput = new BukkitObjectInputStream(inputStream);
+            ItemStack item = (ItemStack) dataInput.readObject();
+
+            dataInput.close();
+            return item;
+        } catch (Exception e) {
+            // Ignored
+        }
+
+        return null;
     }
 }
