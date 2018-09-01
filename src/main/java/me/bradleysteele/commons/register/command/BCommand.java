@@ -55,6 +55,9 @@ public abstract class BCommand implements Registrable, BCommandExecutor {
         children.forEach(child -> {
             child.plugin = plugin;
             child.parent = this;
+
+            child.register();
+            child.onRegister();
         });
 
         if (isRoot()) {
@@ -64,8 +67,6 @@ public abstract class BCommand implements Registrable, BCommandExecutor {
                 plugin.getConsole().error("Failed to register command: &c" + getName() + "&r.");
             }
         }
-
-        children.forEach(BCommand::register);
     }
 
     final void called(CommandSender sender, String[] args) {
