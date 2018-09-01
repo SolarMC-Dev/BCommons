@@ -140,6 +140,16 @@ public class BStore<T> implements Registrable {
     }
 
     /**
+     * Copies all of the mappings from the provided map to
+     * this store.
+     *
+     * @param map mappings to be stored in this map.
+     */
+    public void storeAll(Map<Object, ? extends T> map) {
+        store.putAll(map);
+    }
+
+    /**
      * @param key key with which the specified value is to be remove.
      *
      * @throws NullPointerException if the provided key is {@code null}.
