@@ -37,24 +37,44 @@ public final class Players {
 
     private Players() {}
 
-    public static String apostrophiseName(String name) {
-        if (name.endsWith("s") || name.endsWith("z")) {
-            return name + "'";
+    public static String apostrophiseName(String name, String prefix) {
+        if (prefix == null) {
+            prefix = "";
         }
 
-        return name + "'s";
+        if (name.endsWith("s") || name.endsWith("z")) {
+            return name + prefix + "'";
+        }
+
+        return name + prefix + "'s";
+    }
+
+    public static String apostrophiseName(String name) {
+        return apostrophiseName(name, null);
+    }
+
+    public static String apostrophiseName(Player player, String prefix) {
+        return apostrophiseName(player.getName(), prefix);
     }
 
     public static String apostrophiseName(Player player) {
-        return apostrophiseName(player.getName());
+        return apostrophiseName(player, null);
+    }
+
+    public static String apostrophiseName(OfflinePlayer player, String prefix) {
+        return apostrophiseName(player.getName(), prefix);
     }
 
     public static String apostrophiseName(OfflinePlayer player) {
-        return apostrophiseName(player.getName());
+        return apostrophiseName(player, null);
+    }
+
+    public static String apostrophiseName(CommandSender sender, String prefix) {
+        return apostrophiseName(sender.getName(), prefix);
     }
 
     public static String apostrophiseName(CommandSender sender) {
-        return apostrophiseName(sender.getName());
+        return apostrophiseName(sender, null);
     }
 
     /**
