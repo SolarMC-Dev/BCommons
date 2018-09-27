@@ -16,6 +16,10 @@
 
 package me.bradleysteele.commons.itemstack;
 
+import com.mojang.authlib.GameProfile;
+import com.mojang.authlib.properties.Property;
+import me.bradleysteele.commons.util.reflect.Reflection;
+import org.apache.commons.codec.binary.Base64;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
@@ -30,6 +34,7 @@ import java.util.UUID;
 public class SkullBuilder extends ItemStackBuilder {
 
     private String owner;
+    private String url;
 
     protected SkullBuilder(String owner) {
         super(new ItemStack(Material.SKULL_ITEM, 1, (short) 3));
@@ -48,6 +53,16 @@ public class SkullBuilder extends ItemStackBuilder {
 
         if (owner != null) {
             meta.setOwner(owner);
+        }
+
+        if (url != null) {
+            byte[] data = Base64.encodeBase64(String.format("{ textures: { SKIN: { url: \"%s\" } } }", url).getBytes());
+
+            GameProfile profile = new GameProfile(UUID.randomUUID(), null);
+            profile.getProperties().put("textures", new Property("textures", new String(data)));
+
+            // Apply to meta
+            Reflection.setFieldValue("profile", meta, profile);
         }
 
         item.setItemMeta(meta);
@@ -72,6 +87,11 @@ public class SkullBuilder extends ItemStackBuilder {
 
     public SkullBuilder withOwner(UUID uuid) {
         this.owner = Bukkit.getOfflinePlayer(uuid).getName();
+        return this;
+    }
+
+    public SkullBuilder withURL(String url) {
+        this.url = url;
         return this;
     }
 }

@@ -69,22 +69,24 @@ public final class ItemStacks {
                 .build();
     }
 
+    public static ItemStack skullOfURL(String url) {
+        return skullBuilder()
+                .withURL(url)
+                .build();
+    }
+
     // Serialize
 
     public static String serializeItems(ItemStack[] items) {
         try {
             ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
             BukkitObjectOutputStream dataOutput = new BukkitObjectOutputStream(outputStream);
-
-            // Write the size of the inventory
             dataOutput.writeInt(items.length);
 
-            // Save every element in the list
             for (ItemStack item : items) {
                 dataOutput.writeObject(item);
             }
 
-            // Serialize the array
             dataOutput.close();
             return Base64Coder.encodeLines(outputStream.toByteArray());
         } catch (Exception e) {
