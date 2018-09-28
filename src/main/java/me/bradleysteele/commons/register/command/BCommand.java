@@ -119,7 +119,7 @@ public abstract class BCommand implements Registrable, BCommandExecutor {
      * @return command's description.
      */
     public String getDescription() {
-        return description;
+        return description != null ? description : "";
     }
 
     /**
