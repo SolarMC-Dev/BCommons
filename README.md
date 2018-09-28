@@ -18,8 +18,7 @@ public class ExamplePlugin extends BPlugin {
 
 ### BCommand
 The [BCommand](https://github.com/BradleySteele/BCommons/blob/master/src/main/java/me/bradleysteele/commons/register/command/BCommand.java) 
-class provides simple methods for easily creating command executors. BCommand classes must be registered in the 
-BPlugin#enable() method as they are processed after. It is important to note when using the BCommand class, you do not
+class provides simple methods for easily creating command executors. It is important to note when using the BCommand class, you do not
 have to register commands in your `plugin.yml`. 
 
 ```java
