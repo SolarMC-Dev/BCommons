@@ -11,7 +11,11 @@ public class ExamplePlugin extends BPlugin {
     
     @Override
     public void enable() {
-        this.register(ExampleWorker.class, ExampleCommand.class, TestCommand.class);
+        this.register(
+                WorkerExample.class, 
+            
+                CmdExample.class
+        );
     }
 }
 ```
@@ -26,9 +30,9 @@ registrable provides simple methods for easily creating command executors. It is
 have to register commands in your `plugin.yml`. 
 
 ```java
-public class ExampleCommand extends BCommand {
+public class CmdExample extends BCommand {
     
-    public ExampleCommand() {
+    public CmdExample() {
         // Note: the "main" command executor must be in this list too.
         this.setAliases("example", "exmpl", "test", "tst");
         
