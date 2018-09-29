@@ -92,7 +92,7 @@ public class BWorker implements Registrable, Listener, Runnable {
     public void setRunning(boolean run) {
         // The plugin must be enabled in order for us to run tasks.
         if (!plugin.isEnabled()) {
-            StaticLog.error("Attempted to alter task &c" + getClass().getSimpleName() + " &rwhile it's parent is disabled.");
+            StaticLog.error("Attempted to alter task &c" + getClass().getSimpleName() + " &rwhile its parent is disabled.");
             return;
         }
 
