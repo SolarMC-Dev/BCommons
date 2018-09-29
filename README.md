@@ -62,9 +62,14 @@ public class WorkerExample extends BWorker {
     private boolean canFly;
 
     public WorkerExample() {
-        this.setDelay(20);   // Initial delay
-        this.setPeriod(20);  // Every second (20 ticks)
-        this.setSync(false); // Asynchronous
+        // Initial delay
+        this.setDelay(20);
+        
+        // Every second (20 ticks)
+        this.setPeriod(20);
+        
+        // Asynchronous
+        this.setSync(false); 
     }
     
     @Override
