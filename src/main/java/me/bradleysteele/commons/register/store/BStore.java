@@ -71,14 +71,29 @@ public class BStore<T> implements Registrable {
         return key != null && store.containsKey(key.toLowerCase());
     }
 
+    /**
+     * @param key the key whose associated value is to be returned.
+     * @return the value to which the specified key is mapped, or
+     *         {@code null}.
+     */
     public T retrieve(Object key) {
         return key != null ? store.get(key) : null;
     }
 
+    /**
+     * @param key in-case sensitive key whose associated value
+     *            is to be returned.
+     * @return the value to which the specified key is mapped, or
+     *         {@code null}.
+     */
     public T retrieve(String key) {
         return key != null ? store.get(key.toLowerCase()) : null;
     }
 
+    /**
+     * @param exclude values to exclude from the retrieve.
+     * @return a random value from the store.
+     */
     public T retrieveRandom(Collection<T> exclude) {
         List<T> values = Lists.newArrayList(store.values());
         values.removeAll(exclude);
@@ -86,11 +101,20 @@ public class BStore<T> implements Registrable {
         return values.get(random.nextInt(values.size()));
     }
 
+    /**
+     * @param exclude values to exclude from the retrieve.
+     * @return a random value from the store.
+     */
     @SafeVarargs
     public final T retrieveRandom(T... exclude) {
         return retrieveRandom(Arrays.asList(exclude));
     }
 
+    /**
+     * @param predicate condition to meet in order to be included
+     *                  in the retrieval.
+     * @return a random value from the store.
+     */
     public T retrieveRandom(Predicate<T> predicate) {
         List<T> values = Lists.newArrayList(store.values())
                 .stream()
@@ -104,14 +128,28 @@ public class BStore<T> implements Registrable {
         return values.get(random.nextInt(values.size()));
     }
 
+    /**
+     * @return the store, modifiable.
+     */
     public Map<Object, T> retrieveAll() {
         return store;
     }
 
+    /**
+     * @return a collection view of the values contained
+     *         in this store.
+     */
     public Collection<T> retrieveValues() {
         return store.values();
     }
 
+    /**
+     * Returns a {@link Set} view of the keys contained in this
+     * store. The set is backed by the map, so changes to the map
+     * are reflected in the set, and vice-versa.
+     *
+     * @return a set view of the keys contained in this store.
+     */
     public Set<Object> retrieveKeySet() {
         return store.keySet();
     }
