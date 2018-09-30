@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package me.bradleysteele.commons.nbt;
+package me.bradleysteele.commons.itemstack.nbt;
 
 import org.bukkit.inventory.ItemStack;
 

@@ -16,7 +16,7 @@
 
 package me.bradleysteele.commons.itemstack;
 
-import me.bradleysteele.commons.nbt.NBTItemStack;
+import me.bradleysteele.commons.itemstack.nbt.NBTItemStack;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.io.BukkitObjectInputStream;

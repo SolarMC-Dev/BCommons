@@ -17,7 +17,7 @@
 package me.bradleysteele.commons.itemstack;
 
 import com.google.common.collect.Lists;
-import me.bradleysteele.commons.nbt.NBTItemStack;
+import me.bradleysteele.commons.itemstack.nbt.NBTItemStack;
 import me.bradleysteele.commons.util.Messages;
 import me.bradleysteele.commons.util.reflect.Reflection;
 import org.bukkit.Material;

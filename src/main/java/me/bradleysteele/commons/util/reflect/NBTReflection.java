@@ -18,7 +18,7 @@ package me.bradleysteele.commons.util.reflect;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
-import me.bradleysteele.commons.nbt.NBTCompound;
+import me.bradleysteele.commons.itemstack.nbt.NBTCompound;
 import me.bradleysteele.commons.util.logging.StaticLog;
 import org.bukkit.Bukkit;
 import org.bukkit.inventory.ItemStack;
