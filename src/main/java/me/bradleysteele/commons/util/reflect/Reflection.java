@@ -323,6 +323,8 @@ public final class Reflection {
         return invokeMethod(getInstanceMethod, null);
     }
 
+    // Setters
+
     /**
      * Sets the accessibility of a field. If access is allowed, the final modifier will be removed.
      *
