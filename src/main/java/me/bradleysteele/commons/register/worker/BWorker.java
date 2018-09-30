@@ -85,7 +85,7 @@ public class BWorker implements Registrable, Listener, Runnable {
     }
 
     /**
-     * Runs or cancels the class' task.
+     * Runs or cancels the worker task.
      *
      * @param run whether we should run the task or not.
      */
