@@ -44,10 +44,10 @@ public class BPlugin extends JavaPlugin {
      * A set containing all of the registered objects within the plugin.
      */
     private final Set<Registrable> registers = Sets.newHashSet();
-    protected final ConsoleLog console = new ConsoleLog();
 
-    private ResourceProvider resourceProvider;
     protected PluginDescriptionFile description;
+    protected ResourceProvider resourceProvider;
+    protected final ConsoleLog console = new ConsoleLog();
 
     @Override
     public final void onLoad() {
@@ -142,6 +142,8 @@ public class BPlugin extends JavaPlugin {
      * unless a singleton.
      *
      * @param object the object to register.
+     *
+     * @see Reflection#isSingleton(Class)
      */
     @SuppressWarnings("unchecked")
     public void register(Object object) {
@@ -175,10 +177,10 @@ public class BPlugin extends JavaPlugin {
     }
 
     /**
-     * @return the plugin's console logger.
+     * @return an unmodifiable set containing all of the registered registers.
      */
-    public ConsoleLog getConsole() {
-        return console;
+    public Set<Registrable> getRegisters() {
+        return Collections.unmodifiableSet(registers);
     }
 
     /**
@@ -189,10 +191,10 @@ public class BPlugin extends JavaPlugin {
     }
 
     /**
-     * @return an unmodifiable set containing all of the registered registers.
+     * @return the plugin's console logger.
      */
-    public Set<Registrable> getRegisters() {
-        return Collections.unmodifiableSet(registers);
+    public ConsoleLog getConsole() {
+        return console;
     }
 
     /**
