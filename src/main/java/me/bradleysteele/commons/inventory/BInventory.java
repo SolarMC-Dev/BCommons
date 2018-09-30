@@ -16,6 +16,7 @@
 
 package me.bradleysteele.commons.inventory;
 
+import me.bradleysteele.commons.worker.WorkerBInventory;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
@@ -23,6 +24,20 @@ import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
 
 /**
+ * The {@link BInventory} is handled by the {@link WorkerBInventory} worker. You
+ * must set your implementation of this interface as your {@link InventoryHolder}
+ * for the inventory you wish to listen for. For example:
+ *
+ *  <pre> {@code
+ * class InvExample implements BInventory {
+ *
+ *     final Inventory inventory;
+ *
+ *     InvExample() {
+ *         inventory = Bukkit.createInventory(this, 9);
+ *     }
+ * }}</pre>
+ *
  * @author Bradley Steele
  */
 public interface BInventory extends InventoryHolder {
