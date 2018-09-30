@@ -34,6 +34,10 @@ public class NBTCompound {
         this.name = name;
     }
 
+    public boolean hasKey(String key) {
+        return NBTReflection.hasKey(getItem(), this, key);
+    }
+
     public String getName() {
         return name;
     }
@@ -44,10 +48,6 @@ public class NBTCompound {
 
     public NBTCompound getParent() {
         return parent;
-    }
-
-    public boolean hasKey(String key) {
-        return NBTReflection.hasKey(getItem(), this, key);
     }
 
     public NBTCompound getCompound(String name) {

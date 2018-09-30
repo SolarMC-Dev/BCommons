@@ -25,10 +25,10 @@ public class NBTItemStack extends NBTCompound {
 
     private ItemStack itemStack;
 
-    public NBTItemStack(ItemStack itemStack) {
+    public NBTItemStack(ItemStack stack) {
         super(null, null);
 
-        this.itemStack = itemStack.clone();
+        this.itemStack = stack.clone();
     }
 
     @Override
