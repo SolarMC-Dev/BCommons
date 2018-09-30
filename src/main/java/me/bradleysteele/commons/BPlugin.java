@@ -58,31 +58,68 @@ public class BPlugin extends JavaPlugin {
         console.setFormat("[&6" + (description.getPrefix() != null ? description.getPrefix() : description.getName())
                 + "&r] [{bcommons_log_level}]: {bcommons_log_message}");
 
-        load();
+        execute(new StateExecutor() {
+
+            @Override
+            public StateType getType() {
+                return StateType.LOAD;
+            }
+
+            @Override
+            public void execute() {
+                load();
+            }
+        });
     }
 
     @Override
     public final void onEnable() {
-        try {
-            enable();
-        } catch (Exception e) {
-            // Using StaticLog, in case the plugin's console is causing issues.
-            StaticLog.error("Failed to enable &c" + description.getName() + "&r, exception was thrown:");
-            StaticLog.exception(e);
+        execute(new StateExecutor() {
 
-            // Disable the plugin internally with Bukkit.
-            Bukkit.getPluginManager().disablePlugin(this);
-        }
+            @Override
+            public StateType getType() {
+                return StateType.ENABLE;
+            }
+
+            @Override
+            public void execute() {
+                enable();
+            }
+        });
     }
 
     @Override
     public final void onDisable() {
-        registers.forEach(Registrable::onUnregister);
+        execute(new StateExecutor() {
 
-        disable();
+            @Override
+            public StateType getType() {
+                return StateType.DISABLE;
+            }
+
+            @Override
+            public void execute() {
+                // Unregister registrables before disabling.
+                registers.forEach(Registrable::onUnregister);
+
+                disable();
+            }
+        });
+    }
+
+    private void execute(StateExecutor executor) {
+        try {
+            executor.execute();
+        } catch (Exception e) {
+            StaticLog.error("Failed to execute plugin in state &c" + executor.getType().name() + "&r, exception was thrown:");
+            StaticLog.exception(e);
+
+            Bukkit.getPluginManager().disablePlugin(this);
+        }
     }
 
     // Semi abstract
+
     public void load() {}
 
     public void enable() {}
@@ -202,5 +239,29 @@ public class BPlugin extends JavaPlugin {
      */
     public void setResourceProvider(ResourceProvider resourceProvider) {
         this.resourceProvider = resourceProvider;
+    }
+
+    // State Execution
+
+    private enum StateType {
+        LOAD,
+        ENABLE,
+        DISABLE
+    }
+
+    private interface StateExecutor {
+
+        /**
+         * @return state executor type.
+         */
+        StateType getType();
+
+        /**
+         * Executes code while catching any exceptions.
+         *
+         * @throws Exception
+         */
+        void execute() throws Exception;
+
     }
 }
