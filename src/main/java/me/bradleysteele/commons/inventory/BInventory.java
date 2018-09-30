@@ -20,6 +20,7 @@ import me.bradleysteele.commons.worker.WorkerBInventory;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
+import org.bukkit.event.inventory.InventoryDragEvent;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
 
@@ -43,11 +44,18 @@ import org.bukkit.inventory.ItemStack;
 public interface BInventory extends InventoryHolder {
 
     /**
-     * @param event     the event which was fired upon clicking.
-     * @param clicker   player who clicked the inventory.
-     * @param stack     {@link ItemStack} that was clicked.
+     * @param event   the event fired upon clicking.
+     * @param clicker player who clicked the inventory.
+     * @param stack   item stack that was clicked.
      */
     default void onClick(InventoryClickEvent event, Player clicker, ItemStack stack) {}
+
+    /**
+     * @param event   the event fired upon dragging.
+     * @param clicker player who dragged in the inventory.
+     * @param stack   item stack which was dragged.
+     */
+    default void onDrag(InventoryDragEvent event, Player clicker, ItemStack stack) {}
 
     /**
      * @param event  the event fired upon closing.
