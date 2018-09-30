@@ -30,6 +30,11 @@ public final class Inventories {
 
     private Inventories() {}
 
+    /**
+     * @param inventory the inventory to clone.
+     * @param holder    new inventory holder.
+     * @return new inventory with a cloned contents of the provided inventory.
+     */
     public static Inventory clone(Inventory inventory, InventoryHolder holder) {
         Inventory inv = Bukkit.createInventory(holder, inventory.getSize(), inventory.getTitle());
         inv.setContents(inventory.getContents().clone());
@@ -37,16 +42,26 @@ public final class Inventories {
         return inv;
     }
 
-    public static void setItem(Inventory inventory, ItemStack item, int... slots) {
-        Arrays.stream(slots).forEach(slot -> inventory.setItem(slot, item.clone()));
+    /**
+     * @param inventory the inventory to put the items in.
+     * @param stack     item stack to clone.
+     * @param slots     array of slots to clone the item stack into.
+     */
+    public static void setItem(Inventory inventory, ItemStack stack, int... slots) {
+        Arrays.stream(slots).forEach(slot -> inventory.setItem(slot, stack.clone()));
     }
 
-    public static void setRow(Inventory inventory, ItemStack item, int row) {
+    /**
+     * @param inventory the inventory to put the items in.
+     * @param stack     item stack to clone.
+     * @param row       row of the inventory to fill.
+     */
+    public static void setRow(Inventory inventory, ItemStack stack, int row) {
         int rowStart = row * 9;
         int rowEnd = rowStart + 8;
 
         for (int slot = rowStart; slot <= rowEnd; slot++) {
-            inventory.setItem(slot, item.clone());
+            inventory.setItem(slot, stack.clone());
         }
     }
 }
