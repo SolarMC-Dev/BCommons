@@ -41,65 +41,104 @@ public final class NBTReflection {
                 .split(",")[3];
     }
 
-
-    // nms/CraftBukkit Classes
-    private static final Class<?> CRAFT_ITEM_STACK = Reflection.getClass("org.bukkit.craftbukkit." + version + ".inventory.CraftItemStack");
-    private static final Class<?> NBT_BASE = Reflection.getClass("net.minecraft.server." + version + ".NBTBase");
-    private static final Class<?> NBT_TAG_COMPOUND = Reflection.getClass("net.minecraft.server." + version + ".NBTTagCompound");
-
-
-    // NBTTagCompound Methods
-
-    /** NBTTagCompound#getString(String key) */
-    private static final Method NTC_GET_STRING = Reflection.getMethod(NBT_TAG_COMPOUND, "getString", String.class);
-
-    /** NBTTagCompound#getInt(String key) */
-    private static final Method NTC_GET_INT = Reflection.getMethod(NBT_TAG_COMPOUND, "getInt", String.class);
-
-    /** NBTTagCompound#getDouble(String key) */
-    private static final Method NTC_GET_DOUBLE = Reflection.getMethod(NBT_TAG_COMPOUND, "getDouble", String.class);
-
-    /** NBTTagCompound#getBoolean(String key) */
-    private static final Method NTC_GET_BOOLEAN = Reflection.getMethod(NBT_TAG_COMPOUND, "getBoolean", String.class);
-
-
-    public static boolean isCompound(ItemStack itemStack, NBTCompound compound){
-        Object root = getTag(getCraftItemStack(itemStack));
-
-        if (root == null) {
-            root = getNewNBTTagCompound();
-        }
-
-        return (getToCompound(root, compound)) != null;
+    public static String getPackageVersion() {
+        return version;
     }
 
-    public static boolean hasKey(ItemStack itemStack, NBTCompound compound, String key) {
-        Object nmsItem = getCraftItemStack(itemStack);
+    // NBTBase
+    private static final Class<?> NBT_BASE = Reflection.getClass("net.minecraft.server." + version + ".NBTBase");
 
-        if (nmsItem == null || !isCompound(itemStack, compound)) {
+    // NBTTagCompound
+    private static final Class<?> NBT_TAG_COMPOUND = Reflection.getClass("net.minecraft.server." + version + ".NBTTagCompound");
+
+    private static final Method NTC_REMOVE = Reflection.getMethod(NBT_TAG_COMPOUND, "remove", String.class);
+    private static final Method NTC_HAS_KEY = Reflection.getMethod(NBT_TAG_COMPOUND, "hasKey", String.class);
+    private static final Method NTC_GET_COMPOUND = Reflection.getMethod(NBT_TAG_COMPOUND, "getCompound", String.class);
+    private static final Method NTC_GET_STRING = Reflection.getMethod(NBT_TAG_COMPOUND, "getString", String.class);
+    private static final Method NTC_GET_INT = Reflection.getMethod(NBT_TAG_COMPOUND, "getInt", String.class);
+    private static final Method NTC_GET_DOUBLE = Reflection.getMethod(NBT_TAG_COMPOUND, "getDouble", String.class);
+    private static final Method NTC_GET_BOOLEAN = Reflection.getMethod(NBT_TAG_COMPOUND, "getBoolean", String.class);
+
+    private static final Method NTC_SET = Reflection.getMethod(NBT_TAG_COMPOUND, "set", String.class, NBT_BASE);
+    private static final Method NTC_SET_STRING = Reflection.getMethod(NBT_TAG_COMPOUND, "setString", String.class, String.class);
+    private static final Method NTC_SET_INT = Reflection.getMethod(NBT_TAG_COMPOUND, "setInt", String.class, int.class);
+    private static final Method NTC_SET_DOUBLE = Reflection.getMethod(NBT_TAG_COMPOUND, "setDouble", String.class, double.class);
+    private static final Method NTC_SET_BOOLEAN = Reflection.getMethod(NBT_TAG_COMPOUND, "setBoolean", String.class, boolean.class);
+
+    // NMS ItemStack
+    private static final Class<?> NMS_ITEM_STACK = Reflection.getClass("net.minecraft.server." + version + ".ItemStack");
+    private static final Method NIS_GET_TAG = Reflection.getMethod(NMS_ITEM_STACK, "getTag");
+    private static final Method NIS_SET_TAG = Reflection.getMethod(NMS_ITEM_STACK, "setTag", NBT_TAG_COMPOUND);
+
+    // CraftItemStack
+    private static final Class<?> CRAFT_ITEM_STACK = Reflection.getClass("org.bukkit.craftbukkit." + version + ".inventory.CraftItemStack");
+    private static final Method CIS_AS_CRAFT_MIRROR = Reflection.getMethod(CRAFT_ITEM_STACK, "asCraftMirror", NMS_ITEM_STACK);
+    private static final Method CIS_AS_NMS_COPY = Reflection.getMethod(CRAFT_ITEM_STACK, "asNMSCopy", ItemStack.class);
+
+
+    private static Object newNBTTagCompound() {
+        return Reflection.newInstance(NBT_TAG_COMPOUND);
+    }
+
+    public static ItemStack addNBTTagCompound(ItemStack stack, NBTCompound compound, String name) {
+        return setValue(stack, compound, name, Reflection.newInstance(NBT_TAG_COMPOUND), NTC_SET);
+    }
+
+    public static boolean isCompound(ItemStack stack, NBTCompound compound) {
+        Object root = getTag(getCraftItemStack(stack));
+
+        if (root == null) {
+            root = newNBTTagCompound();
+        }
+
+        return getToCompound(root, compound) != null;
+    }
+
+    // NBTTagCompound#remove
+    public static ItemStack remove(ItemStack item, NBTCompound compound, String key) {
+        Object craftStack = getCraftItemStack(item);
+
+        if (craftStack == null || !isCompound(item, compound)) {
+            return item;
+        }
+
+        Object rootTag = getTag(craftStack);
+        Object workingTag = getToCompound(rootTag, compound);
+
+        if (workingTag == null) {
+            return item;
+        }
+
+        Reflection.invokeMethod(NTC_REMOVE, workingTag, key);
+        return getItemStack(setNBTTag(rootTag, craftStack));
+    }
+
+    // NBTTagCompound#hasKey
+    public static boolean hasKey(ItemStack stack, NBTCompound compound, String key) {
+        Object craftStack = getCraftItemStack(stack);
+
+        if (craftStack == null || !isCompound(stack, compound)) {
             return false;
         }
 
-        Object rootTag = getTag(nmsItem);
-        Object workingTag = getToCompound(rootTag, compound);
+        Object workingTag = getToCompound(getTag(craftStack), compound);
 
         if (workingTag == null) {
             return false;
         }
 
-        Method method = Reflection.getMethod(workingTag.getClass(), "hasKey", String.class);
-        return Reflection.invokeMethod(method, workingTag, key);
+        return Reflection.invokeMethod(NTC_HAS_KEY, workingTag, key);
     }
 
-    public static Set<String> getKeys(ItemStack itemStack, NBTCompound compound) {
-        Object nmsItem = getCraftItemStack(itemStack);
+    // NBTTagCompound#c
+    public static Set<String> getKeys(ItemStack stack, NBTCompound compound) {
+        Object craftStack = getCraftItemStack(stack);
 
-        if (nmsItem == null || !isCompound(itemStack, compound)) {
+        if (craftStack == null || !isCompound(stack, compound)) {
             return null;
         }
 
-        Object rootTag = getTag(nmsItem);
-        Object workingTag = getToCompound(rootTag, compound);
+        Object workingTag = getToCompound(getTag(craftStack), compound);
 
         if (workingTag == null) {
             return null;
@@ -108,98 +147,7 @@ public final class NBTReflection {
         return Reflection.invokeMethod("c", workingTag);
     }
 
-    public static String getString(ItemStack itemStack, NBTCompound compound, String key) {
-        return getKey(itemStack, compound, key, NTC_GET_STRING, null);
-    }
-
-    public static int getInt(ItemStack itemStack, NBTCompound compound, String key) {
-        return getKey(itemStack, compound, key, NTC_GET_INT, 0);
-    }
-
-    public static double getDouble(ItemStack itemStack, NBTCompound compound, String key) {
-        return getKey(itemStack, compound, key, NTC_GET_DOUBLE, 0.0D);
-    }
-
-    public static boolean getBoolean(ItemStack itemStack, NBTCompound compound, String key) {
-        return getKey(itemStack, compound, key, NTC_GET_BOOLEAN, false);
-    }
-
-    public static <T> T getObject(ItemStack itemStack, NBTCompound compound, String key, Class<T> type) {
-        String json = getString(itemStack, compound, key);
-
-        if (json == null) {
-            return null;
-        }
-
-        try {
-            return deserializeJson(json, type);
-        } catch (JsonSyntaxException e) {
-            StaticLog.error("Failed to deserialize NBT Json object:");
-            StaticLog.exception(e);
-        }
-
-        return null;
-    }
-
-    private static Object getNewNBTTagCompound() {
-        return Reflection.newInstance(NBT_TAG_COMPOUND);
-    }
-
-    private static Object getCraftItemStack(ItemStack original) {
-        return Reflection.invokeMethod(Reflection.getMethod(CRAFT_ITEM_STACK, "asNMSCopy", ItemStack.class), CRAFT_ITEM_STACK, original);
-    }
-
-    private static ItemStack getItemStack(Object item) {
-        return Reflection.invokeMethod(Reflection.getMethod(CRAFT_ITEM_STACK, "asCraftMirror", item.getClass()), CRAFT_ITEM_STACK, item);
-    }
-
-    private static Object getTag(Object craftItemStack) {
-        Object tag = Reflection.invokeMethod(Reflection.getMethod(craftItemStack.getClass(), "getTag"), craftItemStack);
-        return tag != null ? tag : getNewNBTTagCompound();
-    }
-
-    private static Object getSubNBTTagCompound(Object compound, String name) {
-        Method method = Reflection.getMethod(compound.getClass(), "getCompound", String.class);
-        return Reflection.invokeMethod(method, compound, name);
-    }
-
-    public static ItemStack addNBTTagCompound(ItemStack item, NBTCompound comp, String name) {
-        if (name == null) {
-            return remove(item, comp, null);
-        }
-
-        Object nmsItem = getCraftItemStack(item);
-
-        if (nmsItem == null) {
-            return null;
-        }
-
-        Object nbtTag = getTag(nmsItem);
-
-        if (nbtTag == null) {
-            nbtTag = getNewNBTTagCompound();
-        }
-
-        if (!isCompound(item, comp)) {
-            return item;
-        }
-
-        Object workingTag = getToCompound(nbtTag, comp);
-
-        try {
-            Method method = workingTag.getClass().getMethod("set", String.class, NBT_BASE);
-            method.invoke(workingTag, name, NBT_TAG_COMPOUND.newInstance());
-            nmsItem = setNBTTag(nbtTag, nmsItem);
-
-            return getItemStack(nmsItem);
-        } catch (Exception ex) {
-            ex.printStackTrace();
-        }
-
-        return item;
-    }
-
-    private static <T> T getKey(ItemStack itemStack, NBTCompound compound, String key, Method method, T def) {
+    private static <T> T getValue(ItemStack itemStack, NBTCompound compound, String key, Method method, T def) {
         Object nmsItem = getCraftItemStack(itemStack);
 
         if (nmsItem == null || !isCompound(itemStack, compound)) {
@@ -216,202 +164,64 @@ public final class NBTReflection {
         return Reflection.invokeMethod(method, tag, key);
     }
 
-    public static ItemStack remove(ItemStack item, NBTCompound comp, String key) {
-        Object nmsItem = getCraftItemStack(item);
-
-        if (nmsItem == null || !isCompound(item, comp)) {
-            return item;
-        }
-
-        Object rootTag = getTag(nmsItem);
-        Object workingTag = getToCompound(rootTag, comp);
-
-        if (workingTag == null) {
-            return item;
-        }
-
-        Method method = Reflection.getMethod(workingTag.getClass(), "remove", String.class);
-        Reflection.invokeMethod(method, workingTag, key);
-
-        nmsItem = setNBTTag(rootTag, nmsItem);
-        return getItemStack(nmsItem);
+    // NBTTagCompound#getString
+    public static String getString(ItemStack stack, NBTCompound compound, String key) {
+        return getValue(stack, compound, key, NTC_GET_STRING, null);
     }
 
-    public static ItemStack setString(ItemStack item, NBTCompound comp, String key, String text) {
-        if (text == null) {
-            return remove(item, comp, key);
-        }
+    // NBTTagCompound#getInt
+    public static int getInt(ItemStack stack, NBTCompound compound, String key) {
+        return getValue(stack, compound, key, NTC_GET_INT, 0);
+    }
 
-        Object nmsItem = getCraftItemStack(item);
+    // NBTTagCompound#getDouble
+    public static double getDouble(ItemStack stack, NBTCompound compound, String key) {
+        return getValue(stack, compound, key, NTC_GET_DOUBLE, 0.0D);
+    }
 
-        if (nmsItem == null) {
+    // NBTTagCompound#getBoolean
+    public static boolean getBoolean(ItemStack stack, NBTCompound compound, String key) {
+        return getValue(stack, compound, key, NTC_GET_BOOLEAN, false);
+    }
+
+    public static <T> T getObject(ItemStack stack, NBTCompound compound, String key, Class<T> type) {
+        String json = getString(stack, compound, key);
+
+        if (json == null) {
             return null;
         }
 
-        Object rootNbtTag = getTag(nmsItem);
-
-        if (rootNbtTag == null) {
-            rootNbtTag = getNewNBTTagCompound();
-        }
-
-        if (!isCompound(item, comp)) {
-            return item;
-        }
-
-        Object workingTag = getToCompound(rootNbtTag, comp);
-
         try {
-            Method method = workingTag.getClass().getMethod("setString", String.class, String.class);
-            method.invoke(workingTag, key, text);
-            nmsItem = setNBTTag(rootNbtTag, nmsItem);
-
-            return getItemStack(nmsItem);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        return item;
-    }
-
-    public static ItemStack setInt(ItemStack item, NBTCompound comp, String key, Integer i) {
-        if (i == null) {
-            return remove(item, comp, key);
-        }
-
-        Object nmsItem = getCraftItemStack(item);
-
-        if (nmsItem == null) {
-            return null;
-        }
-
-        Object rootTag = getTag(nmsItem);
-
-        if (rootTag == null) {
-            rootTag = getNewNBTTagCompound();
-        }
-
-        if (!isCompound(item, comp)) {
-            return item;
-        }
-
-        Object workingTag = getToCompound(rootTag, comp);
-        Method method;
-
-        try {
-            method = workingTag.getClass().getMethod("setInt", String.class, int.class);
-            method.invoke(workingTag, key, i);
-            nmsItem = setNBTTag(rootTag, nmsItem);
-
-            return getItemStack(nmsItem);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        return item;
-    }
-
-    public static ItemStack setDouble(ItemStack item, NBTCompound comp, String key, Double d) {
-        if (d == null) {
-            return remove(item, comp, key);
-        }
-
-        Object nmsItem = getCraftItemStack(item);
-
-        if (nmsItem == null) {
-            return null;
-        }
-
-        Object rootTag = getTag(nmsItem);
-
-        if (rootTag == null) {
-            rootTag = getNewNBTTagCompound();
-        }
-
-        if (!isCompound(item, comp)) {
-            return item;
-        }
-
-        Object workingTag = getToCompound(rootTag, comp);
-        Method method;
-
-        try {
-            method = workingTag.getClass().getMethod("setDouble", String.class, double.class);
-            method.invoke(workingTag, key, d);
-            nmsItem = setNBTTag(rootTag, nmsItem);
-
-            return getItemStack(nmsItem);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        return item;
-    }
-
-    public static ItemStack setBoolean(ItemStack item, NBTCompound comp, String key, Boolean d) {
-        if (d == null) {
-            return remove(item, comp, key);
-        }
-
-        Object nmsItem = getCraftItemStack(item);
-
-        if (nmsItem == null) {
-            return null;
-        }
-
-        Object rootTag = getTag(nmsItem);
-
-        if (rootTag == null) {
-            rootTag = getNewNBTTagCompound();
-        }
-
-        if (!isCompound(item, comp)) {
-            return item;
-        }
-
-        Object workingTag = getToCompound(rootTag, comp);
-        Method method;
-
-        try {
-            method = workingTag.getClass().getMethod("setBoolean", String.class, boolean.class);
-            method.invoke(workingTag, key, d);
-            nmsItem = setNBTTag(rootTag, nmsItem);
-
-            return getItemStack(nmsItem);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        return item;
-    }
-
-    public static ItemStack setObject(ItemStack item, NBTCompound comp, String key, Object value) {
-        try {
-            String json = gson.toJson(value);
-            return setString(item, comp, key, json);
-        } catch (Exception ex) {
-            ex.printStackTrace();
+            return deserializeJson(json, type);
+        } catch (JsonSyntaxException e) {
+            StaticLog.error("Failed to deserialize NBT Json object:");
+            StaticLog.exception(e);
         }
 
         return null;
     }
 
-    private static Object setNBTTag(Object tag, Object item) {
-        Method method = Reflection.getMethod(item.getClass(), "setTag", tag.getClass());
-        Reflection.invokeMethod(method, item, tag);
-        return item;
+    // CraftItemStack#asNMSCopy
+    private static Object getCraftItemStack(ItemStack stack) {
+        return Reflection.invokeMethod(CIS_AS_NMS_COPY, CRAFT_ITEM_STACK, stack);
     }
 
-    private static <T> T deserializeJson(String json, Class<T> type) throws JsonSyntaxException {
-        if (json == null) {
-            return null;
-        }
-
-        T obj = gson.fromJson(json, type);
-
-        return type.cast(obj);
+    // CraftItemStack#asCraftMirror
+    private static ItemStack getItemStack(Object craftStack) {
+        return Reflection.invokeMethod(CIS_AS_CRAFT_MIRROR, CRAFT_ITEM_STACK, craftStack);
     }
 
-    private static Object getToCompound(Object nbtTag, NBTCompound compound){
+    // ItemStack#getTag
+    private static Object getTag(Object craftStack) {
+        Object tag = Reflection.invokeMethod(NIS_GET_TAG, craftStack);
+        return tag != null ? tag : newNBTTagCompound();
+    }
+
+    private static Object getSubNBTTagCompound(Object compound, String name) {
+        return Reflection.invokeMethod(NTC_GET_COMPOUND, compound, name);
+    }
+
+    private static Object getToCompound(Object nbtTag, NBTCompound compound) {
         Stack<String> structure = new Stack<>();
 
         while (compound.getParent() != null) {
@@ -428,5 +238,79 @@ public final class NBTReflection {
         }
 
         return nbtTag;
+    }
+
+    private static ItemStack setValue(ItemStack stack, NBTCompound compound, String key, Object value, Method method) {
+        if (value == null) {
+            return remove(stack, compound, key);
+        }
+
+        Object craftStack = getCraftItemStack(stack);
+
+        if (craftStack == null) {
+            return null;
+        }
+
+        Object rootTag = getTag(craftStack);
+
+        if (rootTag == null) {
+            rootTag = newNBTTagCompound();
+        }
+
+        if (!isCompound(stack, compound)) {
+            return stack;
+        }
+
+        // Map key-value using provided setter
+        Reflection.invokeMethod(method, getToCompound(rootTag, compound), key, value);
+
+        craftStack = setNBTTag(rootTag, craftStack);
+        return getItemStack(craftStack);
+    }
+
+    // NBTTagCompound#setString
+    public static ItemStack setString(ItemStack stack, NBTCompound compound, String key, String value) {
+        return setValue(stack, compound, key, value, NTC_SET_STRING);
+    }
+
+    // NBTTagCompound#setInt
+    public static ItemStack setInt(ItemStack stack, NBTCompound compound, String key, int value) {
+        return setValue(stack, compound, key, value, NTC_SET_INT);
+    }
+
+    // NBTTagCompound#setDouble
+    public static ItemStack setDouble(ItemStack stack, NBTCompound compound, String key, double value) {
+        return setValue(stack, compound, key, value, NTC_SET_DOUBLE);
+    }
+
+    // NBTTagCompound#setBoolean
+    public static ItemStack setBoolean(ItemStack stack, NBTCompound compound, String key, boolean value) {
+        return setValue(stack, compound, key, value, NTC_SET_BOOLEAN);
+    }
+
+    public static ItemStack setObject(ItemStack stack, NBTCompound compound, String key, Object value) {
+        try {
+            String json = gson.toJson(value);
+            return setString(stack, compound, key, json);
+        } catch (Exception e) {
+            // Ignored
+        }
+
+        return stack;
+    }
+
+    // ItemStack#setTag
+    private static Object setNBTTag(Object tag, Object item) {
+        Reflection.invokeMethod(NIS_SET_TAG, item, tag);
+        return item;
+    }
+
+    private static <T> T deserializeJson(String json, Class<T> type) throws JsonSyntaxException {
+        if (json == null) {
+            return null;
+        }
+
+        T object = gson.fromJson(json, type);
+        return type.cast(object);
     }
 }
