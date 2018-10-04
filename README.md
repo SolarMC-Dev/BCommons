@@ -22,7 +22,7 @@ public class ExamplePlugin extends BPlugin {
 
 ## Registrable
 
-All [Registrable](https://github.com/BradleySteele/BCommons/blob/master/src/main/java/me/bradleysteele/commons/register/Registrable.java) classes must be enabled through [BPlugin#register()](https://github.com/BradleySteele/BCommons/blob/master/src/main/java/me/bradleysteele/commons/BPlugin.java#L95). Singletons must have a static `get()` or `getInstance()` method returning an instance of the class being registered, otherwise a new instance will be created and registered. Some examples of built-in registrables can be found below. 
+All [Registrable](https://github.com/BradleySteele/BCommons/blob/master/src/main/java/me/bradleysteele/commons/register/Registrable.java) classes must be enabled through [`BPlugin#register`](https://github.com/BradleySteele/BCommons/blob/master/src/main/java/me/bradleysteele/commons/BPlugin.java#L132). Singletons must have a static `get()` or `getInstance()` method returning an instance of the class being registered, otherwise a new instance will be created and registered. Some examples of built-in registrables can be found below. 
 
 ### BCommand
 The [BCommand](https://github.com/BradleySteele/BCommons/blob/master/src/main/java/me/bradleysteele/commons/register/command/BCommand.java) 
