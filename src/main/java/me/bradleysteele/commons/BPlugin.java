@@ -58,12 +58,7 @@ public class BPlugin extends JavaPlugin {
         console.setFormat("[&6" + (description.getPrefix() != null ? description.getPrefix() : description.getName())
                 + "&r] [{bcommons_log_level}]: {bcommons_log_message}");
 
-        execute(new StateExecutor() {
-
-            @Override
-            public StateType getType() {
-                return StateType.LOAD;
-            }
+        execute(new StateExecutor(StateType.LOAD) {
 
             @Override
             public void execute() {
@@ -74,12 +69,7 @@ public class BPlugin extends JavaPlugin {
 
     @Override
     public final void onEnable() {
-        execute(new StateExecutor() {
-
-            @Override
-            public StateType getType() {
-                return StateType.ENABLE;
-            }
+        execute(new StateExecutor(StateType.ENABLE) {
 
             @Override
             public void execute() {
@@ -90,12 +80,7 @@ public class BPlugin extends JavaPlugin {
 
     @Override
     public final void onDisable() {
-        execute(new StateExecutor() {
-
-            @Override
-            public StateType getType() {
-                return StateType.DISABLE;
-            }
+        execute(new StateExecutor(StateType.DISABLE) {
 
             @Override
             public void execute() {
@@ -111,7 +96,7 @@ public class BPlugin extends JavaPlugin {
         try {
             executor.execute();
         } catch (Exception e) {
-            StaticLog.error("Failed to execute plugin in state &c" + executor.getType().name() + "&r, exception was thrown:");
+            StaticLog.error("Failed to execute plugin in state &c" + executor.type.name() + "&r, exception was thrown:");
             StaticLog.exception(e);
 
             Bukkit.getPluginManager().disablePlugin(this);
@@ -249,19 +234,20 @@ public class BPlugin extends JavaPlugin {
         DISABLE
     }
 
-    private interface StateExecutor {
+    private abstract class StateExecutor {
 
-        /**
-         * @return state executor type.
-         */
-        StateType getType();
+        private final StateType type;
+
+        StateExecutor(StateType type) {
+            this.type = type;
+        }
 
         /**
          * Executes code while catching any exceptions.
          *
          * @throws Exception
          */
-        void execute() throws Exception;
+         abstract void execute() throws Exception;
 
     }
 }
