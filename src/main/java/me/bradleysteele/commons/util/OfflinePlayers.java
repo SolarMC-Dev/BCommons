@@ -73,6 +73,32 @@ public class OfflinePlayers {
                    }
                });
 
+    private static final LoadingCache<UUID, String> skinCache = CacheBuilder.newBuilder()
+            .maximumSize(10000)
+            .expireAfterWrite(60, TimeUnit.MINUTES)
+            .build(new CacheLoader<UUID, String>() {
+
+                @Override
+                public String load(UUID uuid) throws Exception {
+                    try {
+                        JSONObject object = (JSONObject) JSONValue.parseWithException(IOUtils.toString(new URL(String.format(ENDPOINT_SESSIONSERVER, uuid.toString().replace("-", "")))));
+                        JSONArray array = (JSONArray) object.get("properties");
+                        JSONObject properties = (JSONObject) array.get(array.size() - 1);
+
+                        // texture
+                        JSONObject value = (JSONObject) parser.parse(new String(Base64.decodeBase64(properties.get("value").toString().getBytes())));
+                        JSONObject textures = (JSONObject) value.get("textures");
+                        JSONObject skin = (JSONObject) textures.get("SKIN");
+
+                        return skin.get("url").toString();
+                    } catch (ParseException | IOException e) {
+                        // Ignored
+                    }
+
+                    return null;
+                }
+            });
+
     public static UUID getUUID(String name) {
         try {
             return uuidCache.get(name);
@@ -117,23 +143,22 @@ public class OfflinePlayers {
         return getName(uuid, null);
     }
 
-    public static String getSkinURL(UUID uuid) {
+    public static String getSkinURL(UUID uuid, boolean refresh) {
+        if (refresh) {
+            skinCache.refresh(uuid);
+        }
+
         try {
-            JSONObject object = (JSONObject) JSONValue.parseWithException(IOUtils.toString(new URL(String.format(ENDPOINT_SESSIONSERVER, uuid.toString().replace("-", "")))));
-            JSONArray array = (JSONArray) object.get("properties");
-            JSONObject properties = (JSONObject) array.get(array.size() - 1);
-
-            // texture
-            JSONObject value = (JSONObject) parser.parse(new String(Base64.decodeBase64(properties.get("value").toString().getBytes())));
-            JSONObject textures = (JSONObject) value.get("textures");
-            JSONObject skin = (JSONObject) textures.get("SKIN");
-
-            return skin.get("url").toString();
-        } catch (ParseException | IOException e) {
+            return skinCache.get(uuid);
+        } catch (ExecutionException e) {
             // Ignored
         }
 
         return null;
+    }
+
+    public static String getSkinURL(UUID uuid) {
+        return getSkinURL(uuid, false);
     }
 
     private static String getResponseAsString(URL url) throws IOException {
