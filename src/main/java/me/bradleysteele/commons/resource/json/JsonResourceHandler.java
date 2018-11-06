@@ -35,6 +35,7 @@ public class JsonResourceHandler implements ResourceHandler<ResourceJson> {
     @Override
     public ResourceJson load(ResourceProvider provider, ResourceReference reference) {
         ResourceJson resource = new ResourceJson(new File(provider.getDataFolder() + reference.getSeparatorPathStart(), reference.getChild()), reference, this);
+
         try {
             BufferedReader in = new BufferedReader(new InputStreamReader(new FileInputStream(resource.getFile())));
             resource.setConfiguration(parser.parse(in).getAsJsonObject());
