@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package me.bradleysteele.commons.resource.type;
+package me.bradleysteele.commons.resource.yml;
 
 import me.bradleysteele.commons.resource.AbstractResource;
 import me.bradleysteele.commons.resource.ResourceHandler;

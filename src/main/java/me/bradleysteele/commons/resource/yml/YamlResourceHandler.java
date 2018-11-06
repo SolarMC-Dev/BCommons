@@ -14,10 +14,9 @@
  * limitations under the License.
  */
 
-package me.bradleysteele.commons.resource.handler;
+package me.bradleysteele.commons.resource.yml;
 
 import me.bradleysteele.commons.resource.*;
-import me.bradleysteele.commons.resource.type.ResourceYaml;
 import me.bradleysteele.commons.util.logging.StaticLog;
 import org.bukkit.configuration.file.YamlConfiguration;
 

@@ -25,7 +25,8 @@ import java.util.List;
  */
 public enum Extension {
 
-    YML("yml", "yaml")
+    YML("yml", "yaml"),
+    JSON("json"),
 
     ;
 
