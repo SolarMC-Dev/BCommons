@@ -49,7 +49,7 @@ public class BStore<T> implements Registrable {
     private static final Locale LOCALE = Locale.ENGLISH;
 
     protected BPlugin plugin;
-    private Map<Object, T> store = Maps.newHashMap();
+    private final Map<Object, T> store = Maps.newHashMap();
 
 
     @Override
