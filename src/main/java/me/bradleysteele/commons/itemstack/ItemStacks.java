@@ -17,7 +17,9 @@
 package me.bradleysteele.commons.itemstack;
 
 import me.bradleysteele.commons.itemstack.nbt.NBTItemStack;
+import me.bradleysteele.commons.resource.ResourceSection;
 import org.bukkit.Material;
+import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.io.BukkitObjectInputStream;
 import org.bukkit.util.io.BukkitObjectOutputStream;
@@ -32,8 +34,6 @@ import java.io.ByteArrayOutputStream;
 public final class ItemStacks {
 
     private ItemStacks() {}
-
-    // Builders
 
     public static ItemStackBuilder builder(Material material) {
         return new ItemStackBuilder(material);
@@ -55,13 +55,38 @@ public final class ItemStacks {
         return skullBuilder(null);
     }
 
-    // Converters
-
     public static NBTItemStack toNBTItemStack(ItemStack item) {
         return new NBTItemStack(item);
     }
 
-    // Util
+    /**
+     * Unwraps a {@link ResourceSection} into a {@link ItemStack}.
+     *
+     * @param section resource section to unwrap.
+     * @return unwrapped item stack.
+     */
+    public static ItemStack toItemStack(ResourceSection section) {
+        if (section == null) {
+            return null;
+        }
+
+        try {
+            int amount = section.getInt("amount", 1);
+
+            return builder(Material.matchMaterial(section.getString("material", "AIR")))
+                    .withAmount(amount < 1 ? 1 : amount > 64 ? 64 : amount)
+                    .withDurability(section.getShort("damage", (short) 0))
+                    .withDisplayNameColoured(section.getString("name"))
+                    .withLoreColoured(section.getStringList("lore"))
+                    .withUnbreakable(section.getBoolean("unbreakable"))
+                    .withItemFlag(ItemFlag.HIDE_ATTRIBUTES)
+                    .withItemFlag(ItemFlag.HIDE_ENCHANTS)
+                    .build();
+        } catch (Exception e) {
+            // Build fail
+            return null;
+        }
+    }
 
     public static ItemStack skullOf(String player) {
         return skullBuilder()
@@ -74,8 +99,6 @@ public final class ItemStacks {
                 .withURL(url)
                 .build();
     }
-
-    // Serialize
 
     public static String serializeItems(ItemStack[] items) {
         try {
