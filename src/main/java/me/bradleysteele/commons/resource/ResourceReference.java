@@ -19,7 +19,8 @@ package me.bradleysteele.commons.resource;
 import me.bradleysteele.commons.util.logging.StaticLog;
 
 /**
- * An unloaded resource which references to both the resource's path and extension.
+ * An unloaded resource which references to both the
+ * resource's path and extension.
  *
  * @author Bradley Steele
  */
@@ -78,9 +79,9 @@ public class ResourceReference implements ResourceItem {
     }
 
     /**
-     * Returns the resource's extension, for example: <i>/plugins/BExample/config.yml</i> should be return
-     * <i>yml</i>. The period before the extension should not be included. This is dependant on the
-     * resource's reference.
+     * Returns the resource's extension, for example: <i>/plugins/BExample/config.yml</i>
+     * will return <i>yml</i>. The period before the extension should not be included.
+     * This is dependant on the resource's reference.
      *
      * @return the resource's extension.
      */
