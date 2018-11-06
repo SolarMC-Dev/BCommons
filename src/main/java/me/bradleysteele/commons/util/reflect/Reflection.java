@@ -16,14 +16,14 @@
 
 package me.bradleysteele.commons.util.reflect;
 
-import me.bradleysteele.commons.util.logging.StaticLog;
-
 import java.lang.reflect.*;
 
 /**
- * The {@link Reflection} class contains reflection utility methods which are all
- * thread safe. In most cases of an exception thrown, it is logged and {@code null} is
- * returned.
+ * The {@link Reflection} class provides thread-safe reflection
+ * utility methods.
+ * <p>
+ * Note that some results may be due to exceptions being thrown
+ * rather than the expected.
  *
  * @author Bradley Steele
  */
@@ -60,7 +60,7 @@ public final class Reflection {
         try {
             instance = getConstructor(clazz, parameterTypes).newInstance(initargs);
         } catch (IllegalAccessException | InstantiationException | InvocationTargetException e) {
-            StaticLog.exception(e);
+            // Ignored
         }
 
         return instance;
@@ -78,7 +78,7 @@ public final class Reflection {
         try {
             clazz = Class.forName(name);
         } catch (ClassNotFoundException e) {
-            StaticLog.exception(e);
+            // Ignored
         }
 
         return clazz;
@@ -97,7 +97,7 @@ public final class Reflection {
         try {
             constructor = clazz.getDeclaredConstructor(parameterTypes);
         } catch (NoSuchMethodException e) {
-            StaticLog.exception(e);
+            // Ignored
         }
 
         return constructor;
@@ -132,7 +132,7 @@ public final class Reflection {
                     setAccessible(field, true);
                     break;
                 }
-            } catch ( NoSuchFieldException | NullPointerException | SecurityException e) {
+            } catch (NoSuchFieldException | NullPointerException | SecurityException e) {
                 // Ignored
             }
 
@@ -161,7 +161,7 @@ public final class Reflection {
         try {
             value = (T) field.get(object);
         } catch (IllegalAccessException e) {
-            StaticLog.exception(e);
+            // Ignored
         }
 
         return value;
@@ -194,7 +194,7 @@ public final class Reflection {
             method = clazz.getMethod(name, parameterTypes);
             setAccessible(method, true);
         } catch (NoSuchMethodException | NullPointerException | SecurityException  e) {
-            StaticLog.exception(e);
+            // Ignored
         }
 
         return method;
@@ -268,7 +268,7 @@ public final class Reflection {
         try {
             result = (T) method.invoke(object, args);
         } catch (Exception e) {
-            StaticLog.exception(e);
+            // Ignored
         }
 
         return result;
@@ -345,7 +345,7 @@ public final class Reflection {
                 modifiers.setInt(field, field.getModifiers() & ~Modifier.FINAL);
             }
         } catch (Exception e) {
-            StaticLog.exception(e);
+            // Ignored
         }
     }
 
@@ -357,7 +357,7 @@ public final class Reflection {
         try {
             method.setAccessible(accessible);
         } catch (SecurityException e) {
-            StaticLog.exception(e);
+            // Ignored
         }
     }
 
@@ -372,7 +372,7 @@ public final class Reflection {
         try {
             field.set(object, value);
         } catch (Exception e) {
-            StaticLog.exception(e);
+            // Ignored
         }
     }
 
