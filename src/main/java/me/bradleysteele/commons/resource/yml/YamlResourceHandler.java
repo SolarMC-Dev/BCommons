@@ -27,10 +27,10 @@ import java.util.List;
 /**
  * @author Bradley Steele
  */
-public class YamlResourceHandler implements ResourceHandler {
+public class YamlResourceHandler implements ResourceHandler<ResourceYaml> {
 
     @Override
-    public Resource load(ResourceProvider provider, ResourceReference reference) {
+    public ResourceYaml load(ResourceProvider provider, ResourceReference reference) {
         ResourceYaml resource = new ResourceYaml(new File(provider.getDataFolder() + reference.getSeparatorPathStart(), reference.getChild()), reference, this);
         resource.setConfiguration(YamlConfiguration.loadConfiguration(resource.getFile()));
 
@@ -38,9 +38,9 @@ public class YamlResourceHandler implements ResourceHandler {
     }
 
     @Override
-    public void save(Resource resource) {
+    public void save(ResourceYaml resource) {
         try {
-            ((ResourceYaml) resource).getRootConfigurationSection().save(resource.getFile());
+            resource.getRootConfigurationSection().save(resource.getFile());
         } catch (IOException e) {
             StaticLog.error("An IOException occurred when trying to save [&c" + resource.getReference() + "&r]:");
             StaticLog.exception(e);

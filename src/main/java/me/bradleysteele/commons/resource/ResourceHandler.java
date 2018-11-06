@@ -24,19 +24,19 @@ import java.util.List;
  *
  * @author Bradley Steele
  */
-public interface ResourceHandler {
+public interface ResourceHandler<T extends Resource> {
 
     /**
      * @param provider the resource provider.
      * @param reference resource's reference.
      * @return a new or existing resource if {@code fromCache} is true.
      */
-    Resource load(ResourceProvider provider, ResourceReference reference);
+    T load(ResourceProvider provider, ResourceReference reference);
 
     /**
      * @param resource the resource we're saving.
      */
-    void save(Resource resource);
+    void save(T resource);
 
     /**
      * Extensions do not have a period ('{@literal .}') at the start.

@@ -27,13 +27,13 @@ import java.util.List;
 /**
  * @author Bradley Steele
  */
-public class JsonResourceHandler implements ResourceHandler {
+public class JsonResourceHandler implements ResourceHandler<ResourceJson> {
 
     private static final JsonParser parser = new JsonParser();
     private static final Gson gson = new Gson();
 
     @Override
-    public Resource load(ResourceProvider provider, ResourceReference reference) {
+    public ResourceJson load(ResourceProvider provider, ResourceReference reference) {
         ResourceJson resource = new ResourceJson(new File(provider.getDataFolder() + reference.getSeparatorPathStart(), reference.getChild()), reference, this);
         try {
             BufferedReader in = new BufferedReader(new InputStreamReader(new FileInputStream(resource.getFile())));
@@ -47,7 +47,7 @@ public class JsonResourceHandler implements ResourceHandler {
     }
 
     @Override
-    public void save(Resource resource) {
+    public void save(ResourceJson resource) {
         try {
             OutputStreamWriter out = new OutputStreamWriter(new FileOutputStream(resource.getFile()));
             out.write(gson.toJson(resource));
