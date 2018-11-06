@@ -126,15 +126,14 @@ public final class Reflection {
         Class<?> c = clazz;
 
         while (c != null && c != Object.class) {
-            if (hasField(c, name)) {
-                try {
+            try {
+                if (c.getDeclaredField(name) != null) {
                     field = c.getDeclaredField(name);
                     setAccessible(field, true);
-                } catch (NoSuchFieldException | NullPointerException | SecurityException e) {
-                    // Ignored
+                    break;
                 }
-
-                break;
+            } catch ( NoSuchFieldException | NullPointerException | SecurityException e) {
+                // Ignored
             }
 
             c = c.getSuperclass();
