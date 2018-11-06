@@ -19,7 +19,6 @@ package me.bradleysteele.commons.util.reflect;
 import me.bradleysteele.commons.util.logging.StaticLog;
 
 import java.lang.reflect.*;
-import java.util.Arrays;
 
 /**
  * The {@link Reflection} class contains reflection utility methods which are all
@@ -112,8 +111,7 @@ public final class Reflection {
      * @return whether the class contains a field with the specified name.
      */
     public static boolean hasField(Class<?> clazz, String name) {
-        return Arrays.stream(clazz.getDeclaredFields())
-                .anyMatch(field -> field.getName().equals(name));
+        return getField(clazz, name) != null;
     }
 
     /**
@@ -133,7 +131,7 @@ public final class Reflection {
                     field = c.getDeclaredField(name);
                     setAccessible(field, true);
                 } catch (NoSuchFieldException | NullPointerException | SecurityException e) {
-                    /* Ignored */
+                    // Ignored
                 }
 
                 break;
@@ -146,10 +144,15 @@ public final class Reflection {
     }
 
     /**
-     * @param field  the field we're modifying.
-     * @param object the object we want.
-     * @param <T>    object type.
-     * @return value of the object.
+     * Returns the value of the field represented by this {@code Field}, on
+     * the specified object. The value is automatically wrapped in an
+     * object if it has a primitive type.
+     *
+     * @param field  the field to retrieve the value from.
+     * @param object object from which the represented field's value is
+     *               to be extracted
+     * @param <T>    value type.
+     * @return the value of the represented field in object.
      */
     @SuppressWarnings("unchecked")
     public static <T> T getFieldValue(Field field, Object object) {
@@ -183,19 +186,28 @@ public final class Reflection {
      * @param clazz          class containing the method.
      * @param name           method name.
      * @param parameterTypes method parameter types.
-     * @return whether the class contains the method.
+     * @return method with the same name and parameter types.
      */
-    public static boolean hasMethod(Class<?> clazz, String name, Class<?>... parameterTypes) {
-        return getMethod(clazz, name, parameterTypes) != null;
+    public static Method getMethod(Class<?> clazz, String name, Class<?>... parameterTypes) {
+        Method method = null;
+
+        try {
+            method = clazz.getMethod(name, parameterTypes);
+            setAccessible(method, true);
+        } catch (NoSuchMethodException | NullPointerException | SecurityException  e) {
+            StaticLog.exception(e);
+        }
+
+        return method;
     }
 
     /**
      * @param clazz class containing the method.
      * @param name  method name.
-     * @return whether the class contains the method.
+     * @return method with the same name with no parameters.
      */
-    public static boolean hasMethod(Class<?> clazz, String name) {
-        return hasMethod(clazz, name, CLASSES);
+    public static Method getMethod(Class<?> clazz, String name) {
+        return getMethod(clazz, name, CLASSES);
     }
 
     /**
@@ -216,40 +228,31 @@ public final class Reflection {
     }
 
     /**
+     * @param clazz          class containing the method.
+     * @param name           method name.
+     * @param parameterTypes method parameter types.
+     * @return whether the class contains the method.
+     */
+    public static boolean hasMethod(Class<?> clazz, String name, Class<?>... parameterTypes) {
+        return getMethod(clazz, name, parameterTypes) != null;
+    }
+
+    /**
+     * @param clazz class containing the method.
+     * @param name  method name.
+     * @return whether the class contains the method.
+     */
+    public static boolean hasMethod(Class<?> clazz, String name) {
+        return hasMethod(clazz, name, CLASSES);
+    }
+
+    /**
      * @param object         the object containing the method.
      * @param name           method name.
      * @return whether the class contains the method.
      */
     public static boolean hasMethod(Object object, String name) {
         return hasMethod(object, name, CLASSES);
-    }
-
-    /**
-     * @param clazz          class containing the method.
-     * @param name           method name.
-     * @param parameterTypes method parameter types.
-     * @return method with the same name and parameter types.
-     */
-    public static Method getMethod(Class<?> clazz, String name, Class<?>... parameterTypes) {
-        Method method = null;
-
-        try {
-            method = clazz.getMethod(name, parameterTypes);
-            setAccessible(method, true);
-        } catch (NoSuchMethodException | NullPointerException | SecurityException  e) {
-            /* Ignored */
-        }
-
-        return method;
-    }
-
-    /**
-     * @param clazz class containing the method.
-     * @param name  method name.
-     * @return method with the same name with no parameters.
-     */
-    public static Method getMethod(Class<?> clazz, String name) {
-        return getMethod(clazz, name, CLASSES);
     }
 
     /**
@@ -326,7 +329,8 @@ public final class Reflection {
     // Setters
 
     /**
-     * Sets the accessibility of a field. If access is allowed, the final modifier will be removed.
+     * Sets the accessibility of a field. If access is allowed,
+     * the final modifier will be removed.
      *
      * @param field      the field to modify.
      * @param accessible whether the field should be accessible.
