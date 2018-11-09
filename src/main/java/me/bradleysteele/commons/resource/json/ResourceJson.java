@@ -170,7 +170,13 @@ public class ResourceJson extends AbstractResource {
 
     @Override
     public void set(String path, Object object) {
-        root.add(path, Reflection.newInstance(JsonPrimitive.class, PARAM_TYPES, object));
+        if (object instanceof ResourceJson) {
+            set(path, ((ResourceJson) object).getConfiguration());
+        } else if (object instanceof JsonObject) {
+            root.add(path, (JsonObject) object);
+        } else {
+            root.add(path, object == null ? JsonNull.INSTANCE : Reflection.newInstance(JsonPrimitive.class, PARAM_TYPES, object));
+        }
     }
 
     @Override
