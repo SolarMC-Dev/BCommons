@@ -96,6 +96,7 @@ public final class Reflection {
 
         try {
             constructor = clazz.getDeclaredConstructor(parameterTypes);
+            constructor.setAccessible(true);
         } catch (NoSuchMethodException e) {
             // Ignored
         }
