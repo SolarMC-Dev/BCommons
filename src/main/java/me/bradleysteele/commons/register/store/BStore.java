@@ -189,20 +189,22 @@ public class BStore<T> implements Registrable {
 
     /**
      * @param key key with which the specified value is to be remove.
+     * @return the value removed from the store mapped to the provided key.
      *
      * @throws NullPointerException if the provided key is {@code null}.
      */
-    public void drop(Object key) {
+    public T drop(Object key) {
         Preconditions.nonNull(key);
 
-        store.remove(key);
+        return store.remove(key);
     }
 
     /**
      * @param key key with which the specified value is to be remove.
+     * @return the value removed from the store mapped to the provided key.
      */
-    public void drop(String key) {
+    public T drop(String key) {
         Preconditions.nonNull(key);
-        drop((Object) key.toLowerCase(LOCALE));
+        return drop((Object) key.toLowerCase(LOCALE));
     }
 }
