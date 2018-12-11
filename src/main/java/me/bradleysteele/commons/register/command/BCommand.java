@@ -31,7 +31,7 @@ import java.util.List;
 /**
  * @author Bradley Steele
  */
-public abstract class BCommand implements Registrable, BCommandExecutor {
+public abstract class BCommand implements Registrable, BCommandExecutor, BCommandTabCompleter {
 
     protected BPlugin plugin;
 
@@ -46,6 +46,7 @@ public abstract class BCommand implements Registrable, BCommandExecutor {
 
     private boolean sync = true;
     private BCommandExecutor executor = this;
+    private BCommandTabCompleter tabCompleter = this;
     private BCommand parent;
 
     @Override
@@ -69,14 +70,14 @@ public abstract class BCommand implements Registrable, BCommandExecutor {
         }
     }
 
-    final void called(CommandSender sender, String[] args) {
+    final void executeCalled(CommandSender sender, String[] args) {
         if (!children.isEmpty() && args.length > 0) {
             for (BCommand child : children) {
                 if (child.getAliases().stream().anyMatch(alias -> alias.equalsIgnoreCase(args[0]))) {
                     List<String> list = Lists.newArrayList(args);
                     list.remove(0);
 
-                    child.called(sender, list.toArray(new String[0]));
+                    child.executeCalled(sender, list.toArray(new String[0]));
                     return;
                 }
             }
@@ -101,6 +102,31 @@ public abstract class BCommand implements Registrable, BCommandExecutor {
         } else {
             Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> executor.execute(sender, args));
         }
+    }
+
+    final List<String> tabCalled(CommandSender sender, String alias, String[] args) {
+        if (permission != null && !sender.hasPermission(permission)) {
+            return null;
+        }
+
+        if (!children.isEmpty() && args.length > 0) {
+            for (BCommand child : children) {
+                if (child.getAliases().stream().anyMatch(a -> a.equalsIgnoreCase(args[0]))) {
+                    List<String> list = Lists.newArrayList(args);
+                    list.remove(0);
+
+                    return child.tabCalled(sender, alias, list.toArray(new String[0]));
+                }
+            }
+        }
+
+        // No children, invoke this class' tab completer
+        return tabComplete(sender, alias, args);
+    }
+
+    @Override
+    public List<String> tabComplete(CommandSender sender, String alias, String[] args) {
+        return null;
     }
 
     /**
@@ -177,6 +203,13 @@ public abstract class BCommand implements Registrable, BCommandExecutor {
      */
     public BCommandExecutor getExecutor() {
         return executor;
+    }
+
+    /**
+     * @return the command's tab completer.
+     */
+    public BCommandTabCompleter getTabCompleter() {
+        return tabCompleter;
     }
 
     /**
@@ -305,5 +338,12 @@ public abstract class BCommand implements Registrable, BCommandExecutor {
      */
     public void setExecutor(BCommandExecutor executor) {
         this.executor = executor;
+    }
+
+    /**
+     * @param tabCompleter the command's tab completer.
+     */
+    public void setTabCompleter(BCommandTabCompleter tabCompleter) {
+        this.tabCompleter = tabCompleter;
     }
 }
