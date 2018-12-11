@@ -213,10 +213,24 @@ public abstract class BCommand implements Registrable, BCommandExecutor, BComman
     }
 
     /**
-     * @param parent the command's parent.
+     * @return the command's parent or {@code null} if the object is a
+     *         root command.
      */
-    public void setParent(BCommand parent) {
-        this.parent = parent;
+    public BCommand getParent() {
+        return parent;
+    }
+
+    /**
+     * @return the command's root.
+     */
+    public BCommand getRoot() {
+        BCommand command = this;
+
+        while (!command.isRoot()) {
+            command = command.getParent();
+        }
+
+        return command;
     }
 
     /**
@@ -224,6 +238,13 @@ public abstract class BCommand implements Registrable, BCommandExecutor, BComman
      */
     public boolean isRoot() {
         return parent == null;
+    }
+
+    /**
+     * @param parent the command's parent.
+     */
+    public void setParent(BCommand parent) {
+        this.parent = parent;
     }
 
     /**
