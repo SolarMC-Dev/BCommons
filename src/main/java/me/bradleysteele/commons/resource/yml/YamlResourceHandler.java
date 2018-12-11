@@ -42,7 +42,7 @@ public class YamlResourceHandler implements ResourceHandler<ResourceYaml> {
         try {
             resource.getRootConfigurationSection().save(resource.getFile());
         } catch (IOException e) {
-            StaticLog.error("An IOException occurred when trying to save [&c" + resource.getReference() + "&r]:");
+            StaticLog.error(String.format("An IOException occurred when trying to save &c%s&r:", resource.getReference()));
             StaticLog.exception(e);
         }
     }
