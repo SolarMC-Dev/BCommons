@@ -48,24 +48,29 @@ public class DefaultResourceProvider implements ResourceProvider {
         File file = new File(dataFolder + reference.getSeparatorPathStart(), reference.getChild());
 
         try {
+            long start = System.currentTimeMillis();
             Files.createParentDirs(file);
 
             if (!file.exists()) {
-                plugin.getConsole().info("Loading resource defaults for &e" + reference.getSeparatorPathEnd() + reference.getChild() + "&r.");
+                // Safe loading of defaults (impl in v0.1.8):
+                //
+                // ByteStreams#copy will throw a NullPointerException if the file is not
+                // present in the plugin's /resources/ folder. Catching this exception
+                // allows for loading dynamic resources without defaults.
 
                 try (InputStream in = plugin.getResource(reference.getSeparatorPathEnd() + reference.getChild());
                      OutputStream out = new FileOutputStream(file)) {
                     ByteStreams.copy(in, out);
+
+                    plugin.getConsole().info(String.format("Loaded resource defaults for &e%s&r (time: &a%s&rms).",
+                            reference.getSeparatorPathEnd() + reference.getChild(), System.currentTimeMillis() - start));
                 }
             }
         } catch (IOException e) {
-            plugin.getConsole().error("An IOException occurred when generating resource defaults for [&c" + reference.getPath() + "&r]:");
+            plugin.getConsole().error(String.format("An IOException occurred when generating resource defaults for [&c%s&r]:", reference.getPath()));
             plugin.getConsole().exception(e);
         } catch (NullPointerException e) {
-            // plugin.getConsole().error("Failed to load resource defaults for: &e" + reference.getPath() + "&r.");
-            // Temporarily ignored.
-            // TODO: create way of loading a resource which is not stored in
-            // TODO: the compiled jar.
+            // Ignored: no defaults to load
         }
 
         Resource resource = getResourceHandler(reference.getExtension())
