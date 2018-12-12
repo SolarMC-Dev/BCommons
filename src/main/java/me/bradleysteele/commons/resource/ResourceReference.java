@@ -16,6 +16,7 @@
 
 package me.bradleysteele.commons.resource;
 
+import me.bradleysteele.commons.util.Strings;
 import me.bradleysteele.commons.util.logging.StaticLog;
 
 /**
@@ -51,6 +52,10 @@ public class ResourceReference implements ResourceItem {
 
     public ResourceReference(String child, Extension extension) {
         this(child, extension.getExtension());
+    }
+
+    public ResourceReference(String child) {
+        this(child, Extension.from(Strings.splitRetrieveLast(child, ".")));
     }
 
     @Override
