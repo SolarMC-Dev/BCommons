@@ -19,7 +19,7 @@ package me.bradleysteele.commons.util;
 /**
  * @author Bradley Steele
  */
-public class Preconditions {
+public final class Preconditions {
 
     private Preconditions() {}
 

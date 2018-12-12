@@ -36,7 +36,7 @@ import java.util.concurrent.TimeUnit;
 /**
  * @author Bradley Steele
  */
-public class OfflinePlayers {
+public final class OfflinePlayers {
 
     private static final JSONParser parser = new JSONParser();
 
