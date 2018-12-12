@@ -26,6 +26,7 @@ import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -68,6 +69,11 @@ public abstract class BCommand implements Registrable, BCommandExecutor, BComman
                 plugin.getConsole().error("Failed to register command: &c" + getName() + "&r.");
             }
         }
+    }
+
+    @Override
+    public List<String> tabComplete(CommandSender sender, String alias, String[] args) {
+        return null;
     }
 
     final void executeCalled(CommandSender sender, String[] args) {
@@ -124,11 +130,6 @@ public abstract class BCommand implements Registrable, BCommandExecutor, BComman
         return tabComplete(sender, alias, args);
     }
 
-    @Override
-    public List<String> tabComplete(CommandSender sender, String alias, String[] args) {
-        return null;
-    }
-
     /**
      * If the {@link BCommand#name} is not present, the first alias will be returned, or
      * {@code null} if no aliases are set.
@@ -181,14 +182,14 @@ public abstract class BCommand implements Registrable, BCommandExecutor, BComman
      * @return a list of aliases, including the command's "main" executor.
      */
     public List<String> getAliases() {
-        return aliases;
+        return Collections.unmodifiableList(aliases);
     }
 
     /**
      * @return list of child commands, can be empty.
      */
     public List<BCommand> getChildren() {
-        return children;
+        return Collections.unmodifiableList(children);
     }
 
     /**
