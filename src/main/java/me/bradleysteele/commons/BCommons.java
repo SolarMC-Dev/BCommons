@@ -16,6 +16,8 @@
 
 package me.bradleysteele.commons;
 
+import me.bradleysteele.commons.hook.dependency.Dependency;
+import me.bradleysteele.commons.hook.dependency.DependencyLoader;
 import me.bradleysteele.commons.util.logging.ConsoleLogHandler;
 import me.bradleysteele.commons.worker.WorkerBInventory;
 
@@ -25,6 +27,17 @@ import java.util.logging.Logger;
  * @author Bradley Steele
  */
 public class BCommons extends BPlugin {
+
+    public BCommons() {
+        this.register(DependencyLoader.class);
+
+        DependencyLoader.get().load(
+                new Dependency("oshi-core-3.4.0.jar", "https://cdn.bradleysteele.me/oshi-core-3.4.0"),
+                new Dependency("jna-platform-4.2.2.jar", "https://cdn.bradleysteele.me/jna-platform-4.2.2"),
+                new Dependency("jna-4.2.2.jar", "https://cdn.bradleysteele.me/jna-4.2.2"),
+                new Dependency("slf4j-api-1.7.22.jar", "https://cdn.bradleysteele.me/slf4j-api-1.7.22")
+        );
+    }
 
     @Override
     public void enable() {
