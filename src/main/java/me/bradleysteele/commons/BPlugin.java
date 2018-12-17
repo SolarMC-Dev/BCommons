@@ -28,6 +28,9 @@ import me.bradleysteele.commons.util.reflect.Reflection;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.java.JavaPlugin;
+import oshi.SystemInfo;
+import oshi.hardware.HardwareAbstractionLayer;
+import oshi.software.os.OperatingSystem;
 
 import java.util.Collections;
 import java.util.List;
@@ -46,6 +49,9 @@ public class BPlugin extends JavaPlugin {
     protected PluginDescriptionFile description;
     protected ResourceProvider resourceProvider;
     protected final ConsoleLog console = new ConsoleLog();
+
+    private HardwareAbstractionLayer hal;
+    private OperatingSystem os;
 
     // Semi abstract
 
@@ -77,6 +83,10 @@ public class BPlugin extends JavaPlugin {
 
     @Override
     public final void onLoad() {
+        SystemInfo sys = new SystemInfo();
+        hal = sys.getHardware();
+        os = sys.getOperatingSystem();
+
         description = getDescription();
         resourceProvider = new DefaultResourceProvider(this);
         resourceProvider.addResourceHandler(new YamlResourceHandler());
@@ -263,6 +273,20 @@ public class BPlugin extends JavaPlugin {
      */
     public ConsoleLog getConsole() {
         return console;
+    }
+
+    /**
+     * @return the system's hardware info.
+     */
+    public HardwareAbstractionLayer getHardware() {
+        return hal;
+    }
+
+    /**
+     * @return the system's operating system info.
+     */
+    public OperatingSystem getOperatingSystem() {
+        return os;
     }
 
     /**
