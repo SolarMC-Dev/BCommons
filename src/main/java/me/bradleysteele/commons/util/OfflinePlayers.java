@@ -56,6 +56,24 @@ public final class OfflinePlayers {
                 }
             });
 
+    private static final JSONParser parser = new JSONParser();
+
+    private static final String ENDPOINT_SESSIONSERVER = "https://sessionserver.mojang.com/session/minecraft/profile/%s";
+    private static final String ENDPOINT_PROFILES_NAMES = "https://api.mojang.com/user/profiles/%s/names";
+    private static final String ENDPOINT_PROFILES = "https://api.mojang.com/users/profiles/minecraft/%s";
+
+    private static final LoadingCache<String, UUID> uuidCache = CacheBuilder.newBuilder()
+            .maximumSize(10000)
+            .expireAfterWrite(60, TimeUnit.MINUTES)
+            .build(new CacheLoader<String, UUID>() {
+
+                @Override
+                public UUID load(String name) throws Exception {
+                    JSONObject object = (JSONObject) JSONValue.parseWithException(getResponseAsString(String.format(ENDPOINT_PROFILES, name)));
+                    return UUID.fromString(object.get("id").toString().replaceAll("(\\w{8})(\\w{4})(\\w{4})(\\w{4})(\\w{12})","$1-$2-$3-$4-$5"));
+                }
+            });
+
     private static final LoadingCache<UUID, String> nameCache = CacheBuilder.newBuilder()
             .maximumSize(10000)
             .expireAfterWrite(60, TimeUnit.MINUTES)
