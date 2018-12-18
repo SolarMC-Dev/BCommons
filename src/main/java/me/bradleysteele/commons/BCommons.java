@@ -32,6 +32,13 @@ public class BCommons extends BPlugin {
         this.register(DependencyLoader.class);
 
         DependencyLoader.get().load(
+                // HttpClient
+                new Dependency("httpclient-4.5.6.jar", "http://central.maven.org/maven2/org/apache/httpcomponents/httpclient/4.5.6/httpclient-4.5.6.jar"),
+                new Dependency("httpcore-4.4.10.jar", "http://central.maven.org/maven2/org/apache/httpcomponents/httpcore/4.4.10/httpcore-4.4.10.jar"),
+                new Dependency("commons-logging-1.2.jar", "http://central.maven.org/maven2/commons-logging/commons-logging/1.2/commons-logging-1.2.jar"),
+                new Dependency("commons-codec-1.10.jar", "http://central.maven.org/maven2/commons-codec/commons-codec/1.10/commons-codec-1.10.jar"),
+
+                // Oshi
                 new Dependency("oshi-core-3.4.0.jar", "https://cdn.bradleysteele.me/oshi-core-3.4.0"),
                 new Dependency("jna-platform-4.2.2.jar", "https://cdn.bradleysteele.me/jna-platform-4.2.2"),
                 new Dependency("jna-4.2.2.jar", "https://cdn.bradleysteele.me/jna-4.2.2"),
