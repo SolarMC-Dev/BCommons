@@ -22,6 +22,7 @@ import me.bradleysteele.commons.resource.DefaultResourceProvider;
 import me.bradleysteele.commons.resource.ResourceProvider;
 import me.bradleysteele.commons.resource.json.JsonResourceHandler;
 import me.bradleysteele.commons.resource.yml.YamlResourceHandler;
+import me.bradleysteele.commons.util.SystemInfos;
 import me.bradleysteele.commons.util.logging.ConsoleLog;
 import me.bradleysteele.commons.util.logging.StaticLog;
 import me.bradleysteele.commons.util.reflect.Reflection;
@@ -50,8 +51,8 @@ public class BPlugin extends JavaPlugin {
     protected ResourceProvider resourceProvider;
     protected final ConsoleLog console = new ConsoleLog();
 
-    private HardwareAbstractionLayer hal;
     private OperatingSystem os;
+    private HardwareAbstractionLayer hal;
 
     // Semi abstract
 
@@ -83,9 +84,9 @@ public class BPlugin extends JavaPlugin {
 
     @Override
     public final void onLoad() {
-        SystemInfo sys = new SystemInfo();
-        hal = sys.getHardware();
-        os = sys.getOperatingSystem();
+        // Pre-load SystemInfo
+        os = SystemInfos.getOperatingSystem();
+        hal = SystemInfos.getHardware();
 
         description = getDescription();
         resourceProvider = new DefaultResourceProvider(this);
@@ -276,17 +277,17 @@ public class BPlugin extends JavaPlugin {
     }
 
     /**
-     * @return the system's hardware info.
-     */
-    public HardwareAbstractionLayer getHardware() {
-        return hal;
-    }
-
-    /**
      * @return the system's operating system info.
      */
     public OperatingSystem getOperatingSystem() {
         return os;
+    }
+
+    /**
+     * @return the system's hardware info.
+     */
+    public HardwareAbstractionLayer getHardware() {
+        return hal;
     }
 
     /**
