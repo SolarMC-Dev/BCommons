@@ -21,7 +21,6 @@ import com.mojang.authlib.properties.Property;
 import me.bradleysteele.commons.util.reflect.Reflection;
 import org.apache.commons.codec.binary.Base64;
 import org.bukkit.Bukkit;
-import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.SkullMeta;
@@ -37,7 +36,7 @@ public class SkullBuilder extends ItemStackBuilder {
     private String url;
 
     protected SkullBuilder(String owner) {
-        super(new ItemStack(Material.SKULL_ITEM, 1, (short) 3));
+        super(new ItemStack(ItemStacks.PLAYER_HEAD, 1, (short) 3));
 
         this.owner = owner;
     }
