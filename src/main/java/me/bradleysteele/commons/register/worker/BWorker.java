@@ -41,7 +41,7 @@ public class BWorker implements Registrable, Listener, Runnable {
         Bukkit.getPluginManager().registerEvents(this, plugin);
         setRunning(true);
 
-        plugin.getConsole().info("Registered worker: &a" + this.getClass().getSimpleName() + "&r.");
+        plugin.getConsole().info(String.format("Registered worker: &a%s&r.", plugin.getLoggableName(this)));
     }
 
     @Override // Runnable
@@ -92,7 +92,7 @@ public class BWorker implements Registrable, Listener, Runnable {
     public void setRunning(boolean run) {
         // The plugin must be enabled in order for us to run tasks.
         if (!plugin.isEnabled()) {
-            StaticLog.error("Attempted to alter task &c" + getClass().getSimpleName() + " &rwhile its parent is disabled.");
+            StaticLog.error(String.format("Attempted to alter task &c%s &rwhile its parent is disabled.", plugin.getLoggableName(this)));
             return;
         }
 

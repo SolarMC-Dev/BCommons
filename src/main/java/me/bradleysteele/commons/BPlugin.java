@@ -159,7 +159,7 @@ public class BPlugin extends JavaPlugin {
         try {
             registrable.register();
         } catch (Exception e) {
-            console.error("Failed to register registrable object: &c" + registrable.getClass().getSimpleName() + "&r.");
+            console.error(String.format("Failed to register registrable object: &c%s&r.", getLoggableName(registrable)));
             console.exception(e);
             return;
         }
@@ -211,10 +211,10 @@ public class BPlugin extends JavaPlugin {
             if (Registrable.class.isAssignableFrom(clazz)) {
                 register((Class<? extends Registrable>) clazz);
             } else {
-                console.error("Failed to register &c" + clazz.getSimpleName() + " &ras it does not implement &eRegistrable&r.");
+                console.error(String.format("Failed to register &c%s &ras it does not implement &eRegistrable&r.", getLoggableName(clazz)));
             }
         } else {
-            console.error("Failed to register &c" + object.getClass().getSimpleName() +"&r: unknown object.");
+            console.error(String.format("Failed to register &c%s&r: unknown object.", getLoggableName(object)));
         }
     }
 
@@ -295,6 +295,21 @@ public class BPlugin extends JavaPlugin {
      */
     public void setResourceProvider(ResourceProvider resourceProvider) {
         this.resourceProvider = resourceProvider;
+    }
+
+    // Util
+
+    public String getLoggableName(Class<?> clazz) {
+        String name = clazz.getSimpleName();
+        return name.substring(0, Math.min(name.length(), 30));
+    }
+
+    public String getLoggableName(Object obj) {
+        if (obj == null) {
+            return "unknown";
+        }
+
+        return getLoggableName(obj.getClass());
     }
 
     // State Execution
