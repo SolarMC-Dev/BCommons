@@ -18,6 +18,7 @@ package me.bradleysteele.commons.itemstack;
 
 import me.bradleysteele.commons.itemstack.nbt.NBTItemStack;
 import me.bradleysteele.commons.resource.ResourceSection;
+import me.bradleysteele.commons.util.reflect.NBTReflection;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
@@ -33,10 +34,16 @@ import java.io.ByteArrayOutputStream;
  */
 public final class ItemStacks {
 
+    public static final Material PLAYER_HEAD;
+
+    static {
+        PLAYER_HEAD = NBTReflection.isLegacy() ? Material.matchMaterial("SKULL_ITEM") : Material.matchMaterial("PLAYER_HEAD");
+    }
+
     private ItemStacks() {}
 
     public static ItemStackBuilder builder(Material material) {
-        return new ItemStackBuilder(material);
+        return NBTReflection.isLegacy() && material == PLAYER_HEAD ? new SkullBuilder() : new ItemStackBuilder(material);
     }
 
     public static ItemStackBuilder builder(ItemStack item) {
@@ -79,8 +86,7 @@ public final class ItemStacks {
                     .withDisplayNameColoured(section.getString("name"))
                     .withLoreColoured(section.getStringList("lore"))
                     .withUnbreakable(section.getBoolean("unbreakable"))
-                    .withItemFlag(ItemFlag.HIDE_ATTRIBUTES)
-                    .withItemFlag(ItemFlag.HIDE_ENCHANTS)
+                    .withItemFlag(ItemFlag.HIDE_ATTRIBUTES, ItemFlag.HIDE_ENCHANTS)
                     .build();
         } catch (Exception e) {
             // Build fail
@@ -98,6 +104,10 @@ public final class ItemStacks {
         return skullBuilder()
                 .withURL(url)
                 .build();
+    }
+
+    public static boolean isPlayerHead(ItemStack stack) {
+        return stack.getType() == PLAYER_HEAD && (!NBTReflection.isLegacy() || stack.getDurability() == 3);
     }
 
     public static String serializeItems(ItemStack[] items) {
