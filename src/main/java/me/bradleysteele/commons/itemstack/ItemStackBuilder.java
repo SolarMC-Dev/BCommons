@@ -25,6 +25,7 @@ import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -44,7 +45,7 @@ public class ItemStackBuilder {
     private List<ItemFlag> itemFlags = Lists.newArrayList();
 
     // NBT
-    private List<Applier> nbtAppliers = Lists.newArrayList();
+    private final List<Applier> nbtAppliers = Lists.newArrayList();
 
     /**
      * @param material item's material.
@@ -59,32 +60,37 @@ public class ItemStackBuilder {
     protected ItemStackBuilder(ItemStack item) {
         this(item.getType());
 
-        ItemMeta meta = item.getItemMeta();
+        withAmount(item.getAmount());
+        withDurability(item.getDurability());
 
-        withAmount(item.getAmount())
-            .withDurability(item.getDurability())
-            .withDisplayName(meta.getDisplayName())
-            .withLore(meta.hasLore() ? meta.getLore() : Lists.newArrayList());
+        if (item.hasItemMeta()) {
+            ItemMeta meta = item.getItemMeta();
 
-        if (Reflection.hasMethod(ItemMeta.class, "setUnbreakable", boolean.class)) {
-            withUnbreakable(meta.isUnbreakable());
+            withDisplayName(meta.getDisplayName());
+            withLore(meta.hasLore() ? meta.getLore() : Lists.newArrayList());
+
+            if (Reflection.hasMethod(ItemMeta.class, "setUnbreakable", boolean.class)) {
+                withUnbreakable(meta.isUnbreakable());
+            }
         }
     }
 
     public ItemStack build() {
         ItemStack item = new ItemStack(material, amount, durability);
-        ItemMeta meta = item.getItemMeta();
 
-        meta.setDisplayName(displayName);
-        meta.setLore(lore);
+        if (item.hasItemMeta()) {
+            ItemMeta meta = item.getItemMeta();
+            meta.setDisplayName(displayName);
+            meta.setLore(lore);
 
-        if (Reflection.hasMethod(ItemMeta.class, "setUnbreakable", boolean.class)) {
-            meta.setUnbreakable(unbreakable);
+            if (Reflection.hasMethod(ItemMeta.class, "setUnbreakable", boolean.class)) {
+                meta.setUnbreakable(unbreakable);
+            }
+
+            meta.addItemFlags(itemFlags.toArray(new ItemFlag[0]));
+
+            item.setItemMeta(meta);
         }
-
-        meta.addItemFlags(itemFlags.toArray(new ItemFlag[0]));
-
-        item.setItemMeta(meta);
 
         // NBTs must be applied AFTER meta is applied.
         for (Applier applier : nbtAppliers) {
@@ -134,8 +140,8 @@ public class ItemStackBuilder {
         return this;
     }
 
-    public ItemStackBuilder withItemFlag(ItemFlag flag) {
-        itemFlags.add(flag);
+    public ItemStackBuilder withItemFlag(ItemFlag... flag) {
+        itemFlags.addAll(Arrays.asList(flag));
         return this;
     }
 
