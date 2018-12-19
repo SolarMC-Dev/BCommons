@@ -16,8 +16,6 @@
 
 package me.bradleysteele.commons.itemstack;
 
-import com.mojang.authlib.GameProfile;
-import com.mojang.authlib.properties.Property;
 import me.bradleysteele.commons.util.reflect.Reflection;
 import org.apache.commons.codec.binary.Base64;
 import org.bukkit.Bukkit;
@@ -57,8 +55,13 @@ public class SkullBuilder extends ItemStackBuilder {
         if (url != null) {
             byte[] data = Base64.encodeBase64(String.format("{ textures: { SKIN: { url: \"%s\" } } }", url).getBytes());
 
-            GameProfile profile = new GameProfile(UUID.randomUUID(), null);
-            profile.getProperties().put("textures", new Property("textures", new String(data)));
+            // Temporary
+            Object profile = Reflection.newInstance(Reflection.getClass("com.mojang.authlib.GameProfile"), new Class[] { UUID.class, String.class }, UUID.randomUUID(), null);
+            Object map = Reflection.invokeMethod(Reflection.getMethod(profile.getClass(), "getProperties"), profile);
+
+            Object property = Reflection.newInstance(Reflection.getClass("com.mojang.authlib.properties.Property"), new Class[] { String.class, String.class }, "textures", new String(data));
+
+            Reflection.invokeMethod(Reflection.getMethod(map.getClass(), "put", String.class, property.getClass()), map, "textures", property);
 
             // Apply to meta
             Reflection.setFieldValue("profile", meta, profile);
