@@ -2,6 +2,26 @@
 Provides reusable and maintainable Spigot components.
 Latest compiled version available [here](https://cdn.bradleysteele.me/BCommons-0.1.8b3-RELEASE).
 
+[![](https://img.shields.io/maven-central/v/me.bradleysteele/commons.svg?label=maven-central)](https://search.maven.org/artifact/me.bradleysteele/commons/) [![](https://img.shields.io/github/license/BradleySteele/BCommons.svg)](https://github.com/BradleySteele/BCommons/blob/master/LICENSE) 
+
+
+### Dependency
+BCommons is hosted on maven's central repository, below are examples of how to include BCommons into your project:
+
+#### Maven
+```xml
+<dependency>
+  <groupId>me.bradleysteele</groupId>
+  <artifactId>commons</artifactId>
+  <version>VERSION/version>
+</dependency>
+```
+
+#### Gradle
+```
+implementation 'me.bradleysteele:commons:VERSION'
+```
+
 ### BPlugin
 
 The `JavaPlugin` is extended by the [BPlugin](https://github.com/BradleySteele/BCommons/blob/master/src/main/java/me/bradleysteele/commons/BPlugin.java) 
