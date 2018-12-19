@@ -5,11 +5,13 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>me.bradleysteele</groupId>
-    <artifactId>BCommons</artifactId>
+    <artifactId>commons</artifactId>
     <version>0.1.8b4-RELEASE</version>
+    <packaging>jar</packaging>
 
-    <url>https://bradleysteele.me</url>
+    <name>BCommons</name>
     <description>Provides reusable and maintainable Spigot components.</description>
+    <url>https://github.com/BradleySteele/BCommons</url>
 
     <licenses>
         <license>
@@ -25,6 +27,16 @@
             <url>https://bradleysteele.me</url>
         </developer>
     </developers>
+
+    <scm>
+        <connection>scm:git:git://github.com/BradleySteele/BCommons.git</connection>
+        <developerConnection>scm:git:ssh://github.com:BradleySteele/BCommons.git</developerConnection>
+        <url>http://github.com/BradleySteele/BCommons</url>
+    </scm>
+
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    </properties>
 
     <repositories>
         <repository>
