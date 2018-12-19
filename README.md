@@ -1,6 +1,6 @@
 # BCommons
 Provides reusable and maintainable Spigot components.
-Latest compiled version available [here](https://cdn.bradleysteele.me/BCommons-0.1.8-RELEASE).
+Latest compiled version available [here](https://cdn.bradleysteele.me/BCommons-0.1.8b3-RELEASE).
 
 ### BPlugin
 
