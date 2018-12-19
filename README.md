@@ -2,7 +2,7 @@
 Provides reusable and maintainable Spigot components.
 Latest compiled version available [here](https://cdn.bradleysteele.me/BCommons-0.1.8b3-RELEASE).
 
-[![maven-central](https://img.shields.io/maven-central/v/me.bradleysteele/commons.svg?label=maven-central)](https://search.maven.org/search?q=g:%22me.bradleysteele%22%20AND%20a:%22commons%22) [![](https://img.shields.io/github/license/BradleySteele/BCommons.svg)](https://github.com/BradleySteele/BCommons/blob/master/LICENSE)
+[![](https://img.shields.io/maven-central/v/me.bradleysteele/commons.svg?label=maven-central)](https://search.maven.org/artifact/me.bradleysteele/commons/) [![](https://img.shields.io/github/license/BradleySteele/BCommons.svg)](https://github.com/BradleySteele/BCommons/blob/master/LICENSE)
 
 
 ### Dependency
