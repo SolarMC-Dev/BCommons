@@ -77,9 +77,9 @@ public class ItemStackBuilder {
 
     public ItemStack build() {
         ItemStack item = new ItemStack(material, amount, durability);
+        ItemMeta meta = item.getItemMeta();
 
-        if (item.hasItemMeta()) {
-            ItemMeta meta = item.getItemMeta();
+        if (meta != null) {
             meta.setDisplayName(displayName);
             meta.setLore(lore);
 
