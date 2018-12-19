@@ -2,6 +2,8 @@
 Provides reusable and maintainable Spigot components.
 Latest compiled version available [here](https://cdn.bradleysteele.me/BCommons-0.1.8b3-RELEASE).
 
+[![Maven Central](https://maven-badges.herokuapp.com/maven-central/me.bradleysteele/commons/badge.svg)](https://maven-badges.herokuapp.com/maven-central/me.bradleysteele/commons)
+
 ### BPlugin
 
 The `JavaPlugin` is extended by the [BPlugin](https://github.com/BradleySteele/BCommons/blob/master/src/main/java/me/bradleysteele/commons/BPlugin.java) 
