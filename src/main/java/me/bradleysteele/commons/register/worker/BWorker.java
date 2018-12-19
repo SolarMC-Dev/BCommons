@@ -104,7 +104,10 @@ public class BWorker implements Registrable, Listener, Runnable {
 
             // Check that the task isn't already running.
             if (isRunning()) {
-                StaticLog.error("Attempted to run task while it is already active. Active Id: &e" + task.getTaskId() + "&r.");
+                if (task != null) {
+                    StaticLog.error("Attempted to run task while it is already active. Active Id: &e" + task.getTaskId() + "&r.");
+                }
+
                 return;
             }
 
