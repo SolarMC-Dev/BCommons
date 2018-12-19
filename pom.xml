@@ -6,7 +6,7 @@
 
     <groupId>me.bradleysteele</groupId>
     <artifactId>BCommons</artifactId>
-    <version>0.1.8b3-RELEASE</version>
+    <version>0.1.8b4-RELEASE</version>
 
     <url>https://bradleysteele.me</url>
     <description>Provides reusable and maintainable Spigot components.</description>
@@ -33,9 +33,9 @@
             <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>org.bukkit</groupId>
-            <artifactId>craftbukkit</artifactId>
-            <version>1.12.2-R0.1-SNAPSHOT</version>
+            <groupId>commons-io</groupId>
+            <artifactId>commons-io</artifactId>
+            <version>2.6</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
