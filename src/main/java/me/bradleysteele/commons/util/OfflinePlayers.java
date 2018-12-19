@@ -118,8 +118,8 @@ public final class OfflinePlayers {
      *
      * @param uuid     player's unique id.
      * @param fallback fallback name to return if retrieving failed.
-     * @return the players name or {@param fallback} if it could
-     *         not be retrieved.
+     * @return the players name or the fallback if it could not be
+     *         retrieved.
      */
     public static String getName(UUID uuid, String fallback) {
         String name = Players.getOfflinePlayer(uuid).getName();

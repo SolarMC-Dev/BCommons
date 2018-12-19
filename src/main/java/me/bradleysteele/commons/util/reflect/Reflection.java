@@ -89,6 +89,7 @@ public final class Reflection {
     /**
      * @param clazz          class containing the constructor.
      * @param parameterTypes parameter types of the constructor.
+     * @param <T>            constructor type.
      * @return the class's constructor with the matching parameter types.
      */
     public static <T> Constructor<T> getConstructor(Class<T> clazz, Class<?>... parameterTypes) {
