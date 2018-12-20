@@ -17,16 +17,19 @@
 package me.bradleysteele.commons.itemstack;
 
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import me.bradleysteele.commons.itemstack.nbt.NBTItemStack;
 import me.bradleysteele.commons.util.Messages;
 import me.bradleysteele.commons.util.reflect.Reflection;
 import org.bukkit.Material;
+import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author Bradley Steele
@@ -42,7 +45,9 @@ public class ItemStackBuilder {
     private String displayName;
     private List<String> lore = Lists.newArrayList();
     private boolean unbreakable = false;
-    private List<ItemFlag> itemFlags = Lists.newArrayList();
+    private final List<ItemFlag> itemFlags = Lists.newArrayList();
+
+    private final Map<Enchantment, Integer> enchantments = Maps.newHashMap();
 
     // NBT
     private final List<Applier> nbtAppliers = Lists.newArrayList();
@@ -76,8 +81,8 @@ public class ItemStackBuilder {
     }
 
     public ItemStack build() {
-        ItemStack item = new ItemStack(material, amount, durability);
-        ItemMeta meta = item.getItemMeta();
+        ItemStack stack = new ItemStack(material, amount, durability);
+        ItemMeta meta = stack.getItemMeta();
 
         if (meta != null) {
             meta.setDisplayName(displayName);
@@ -88,16 +93,17 @@ public class ItemStackBuilder {
             }
 
             meta.addItemFlags(itemFlags.toArray(new ItemFlag[0]));
-
-            item.setItemMeta(meta);
+            stack.setItemMeta(meta);
         }
+
+        stack.addUnsafeEnchantments(enchantments);
 
         // NBTs must be applied AFTER meta is applied.
         for (Applier applier : nbtAppliers) {
-            item = applier.apply(item);
+            stack = applier.apply(stack);
         }
 
-        return item;
+        return stack;
     }
 
     public ItemStackBuilder withMaterial(Material material) {
@@ -142,6 +148,16 @@ public class ItemStackBuilder {
 
     public ItemStackBuilder withItemFlag(ItemFlag... flag) {
         itemFlags.addAll(Arrays.asList(flag));
+        return this;
+    }
+
+    public ItemStackBuilder withEnchantment(Enchantment enchantment, int level) {
+        enchantments.put(enchantment, level);
+        return this;
+    }
+
+    public ItemStackBuilder withEnchantments(Map<Enchantment, Integer> enchantments) {
+        this.enchantments.putAll(enchantments);
         return this;
     }
 
