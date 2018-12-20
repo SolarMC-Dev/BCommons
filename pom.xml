@@ -6,7 +6,7 @@
 
     <groupId>me.bradleysteele</groupId>
     <artifactId>commons</artifactId>
-    <version>0.1.8b6</version>
+    <version>0.1.8b7</version>
     <packaging>jar</packaging>
 
     <name>BCommons</name>
@@ -64,7 +64,7 @@
         <dependency>
             <groupId>org.spigotmc</groupId>
             <artifactId>spigot-api</artifactId>
-            <version>1.12.2-R0.1-SNAPSHOT</version>
+            <version>1.13.2-R0.1-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
