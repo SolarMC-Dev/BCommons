@@ -20,7 +20,6 @@ import me.bradleysteele.commons.itemstack.nbt.NBTItemStack;
 import me.bradleysteele.commons.resource.ResourceSection;
 import me.bradleysteele.commons.util.reflect.NBTReflection;
 import org.bukkit.Material;
-import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.io.BukkitObjectInputStream;
 import org.bukkit.util.io.BukkitObjectOutputStream;
@@ -73,25 +72,22 @@ public final class ItemStacks {
      * @return unwrapped item stack.
      */
     public static ItemStack toItemStack(ResourceSection section) {
+        return toItemStackBuilder(section).build();
+    }
+
+    public static ItemStackBuilder toItemStackBuilder(ResourceSection section) {
         if (section == null) {
             return null;
         }
 
-        try {
-            int amount = section.getInt("amount", 1);
+        int amount = section.getInt("amount", 1);
 
-            return builder(Material.matchMaterial(section.getString("material", "AIR")))
-                    .withAmount(amount < 1 ? 1 : amount > 64 ? 64 : amount)
-                    .withDurability(section.getShort("damage", (short) 0))
-                    .withDisplayNameColoured(section.getString("name"))
-                    .withLoreColoured(section.getStringList("lore"))
-                    .withUnbreakable(section.getBoolean("unbreakable"))
-                    .withItemFlag(ItemFlag.HIDE_ATTRIBUTES, ItemFlag.HIDE_ENCHANTS)
-                    .build();
-        } catch (Exception e) {
-            // Build fail
-            return null;
-        }
+        return builder(Material.matchMaterial(section.getString("material", "AIR")))
+                .withAmount(amount < 1 ? 1 : amount > 64 ? 64 : amount)
+                .withDurability(section.getShort("damage", (short) 0))
+                .withDisplayNameColoured(section.getString("name"))
+                .withLoreColoured(section.getStringList("lore"))
+                .withUnbreakable(section.getBoolean("unbreakable"));
     }
 
     public static ItemStack skullOf(String player) {
