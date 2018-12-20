@@ -73,10 +73,7 @@ public class ItemStackBuilder {
 
             withDisplayName(meta.getDisplayName());
             withLore(meta.hasLore() ? meta.getLore() : Lists.newArrayList());
-
-            if (Reflection.hasMethod(ItemMeta.class, "setUnbreakable", boolean.class)) {
-                withUnbreakable(meta.isUnbreakable());
-            }
+            withUnbreakable(meta.spigot().isUnbreakable());
         }
     }
 
@@ -87,10 +84,7 @@ public class ItemStackBuilder {
         if (meta != null) {
             meta.setDisplayName(displayName);
             meta.setLore(lore);
-
-            if (Reflection.hasMethod(ItemMeta.class, "setUnbreakable", boolean.class)) {
-                meta.setUnbreakable(unbreakable);
-            }
+            meta.spigot().setUnbreakable(unbreakable);
 
             meta.addItemFlags(itemFlags.toArray(new ItemFlag[0]));
             stack.setItemMeta(meta);
