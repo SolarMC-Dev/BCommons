@@ -16,6 +16,7 @@
 
 package me.bradleysteele.commons.inventory;
 
+import me.bradleysteele.commons.itemstack.ItemStacks;
 import org.bukkit.Bukkit;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
@@ -40,6 +41,32 @@ public final class Inventories {
         inv.setContents(inventory.getContents().clone());
 
         return inv;
+    }
+
+    /**
+     * Checks to see if an item stack can fit inside an inventory,
+     * includes stacks which aren't at their max stack size.
+     *
+     * @param inventory inventory to check.
+     * @param stack     item stack to check.
+     * @return {@code true} if the item stack can fit in the inventory.
+     */
+    public static boolean fits(Inventory inventory, ItemStack stack) {
+        int amount = stack.getAmount();
+
+        for (ItemStack item : inventory.getContents()) {
+            if (amount <= 0) {
+                return true;
+            }
+
+            if (ItemStacks.isBlank(item)) {
+                amount -= stack.getMaxStackSize();
+            } else if (item.isSimilar(stack)) {
+                amount -= item.getMaxStackSize() - item.getAmount();
+            }
+        }
+
+        return amount <= 0;
     }
 
     /**
