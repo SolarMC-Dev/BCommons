@@ -21,7 +21,6 @@ import com.google.gson.JsonSyntaxException;
 import me.bradleysteele.commons.itemstack.nbt.NBTCompound;
 import me.bradleysteele.commons.util.logging.StaticLog;
 import org.bukkit.Bukkit;
-import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 
 import java.lang.reflect.Method;
@@ -35,14 +34,19 @@ public final class NBTReflection {
 
     private static final Gson gson = new Gson();
     private static final String version;
-    private static final boolean legacy;
+    private static boolean legacy;
 
     static {
         version = Bukkit.getServer().getClass().getPackage().getName()
                 .replace(".", ",")
                 .split(",")[3];
 
-        legacy = Material.matchMaterial("RED_WOOL") == null;
+        try {
+            Class.forName("org.bukkit.GameRule");
+            legacy = false;
+        } catch (ClassNotFoundException e) {
+            legacy = true;
+        }
     }
 
     public static String getPackageVersion() {
