@@ -102,6 +102,10 @@ public final class ItemStacks {
                 .build();
     }
 
+    public static boolean isBlank(ItemStack stack) {
+        return stack == null || stack.getType() == Material.AIR;
+    }
+
     public static boolean isPlayerHead(ItemStack stack) {
         return stack.getType() == PLAYER_HEAD && (!NBTReflection.isLegacy() || stack.getDurability() == 3);
     }
