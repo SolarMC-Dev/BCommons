@@ -16,6 +16,7 @@
 
 package me.bradleysteele.commons.util;
 
+import me.bradleysteele.commons.util.logging.StaticLog;
 import oshi.SystemInfo;
 import oshi.hardware.HardwareAbstractionLayer;
 import oshi.software.os.OperatingSystem;
@@ -34,10 +35,20 @@ public final class SystemInfos {
     }
 
     public static OperatingSystem getOperatingSystem() {
-        return system.getOperatingSystem();
+        try {
+            return system.getOperatingSystem();
+        } catch (Exception e) {
+            StaticLog.error("Failed to receive OS information.");
+            return null;
+        }
     }
 
     public static HardwareAbstractionLayer getHardware() {
-        return system.getHardware();
+        try {
+            return system.getHardware();
+        } catch (Exception e) {
+            StaticLog.error("Failed to receive hardware information.");
+            return null;
+        }
     }
 }
