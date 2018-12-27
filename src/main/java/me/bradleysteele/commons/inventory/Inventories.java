@@ -48,25 +48,11 @@ public final class Inventories {
      * includes stacks which aren't at their max stack size.
      *
      * @param inventory inventory to check.
-     * @param stack     item stack to check.
+     * @param stacks    item stacks to check.
      * @return {@code true} if the item stack can fit in the inventory.
      */
-    public static boolean fits(Inventory inventory, ItemStack stack) {
-        int amount = stack.getAmount();
-
-        for (ItemStack item : inventory.getContents()) {
-            if (amount <= 0) {
-                return true;
-            }
-
-            if (ItemStacks.isBlank(item)) {
-                amount -= stack.getMaxStackSize();
-            } else if (item.isSimilar(stack)) {
-                amount -= item.getMaxStackSize() - item.getAmount();
-            }
-        }
-
-        return amount <= 0;
+    public static boolean fits(Inventory inventory, ItemStack... stacks) {
+        return clone(inventory, null).addItem(stacks).isEmpty();
     }
 
     /**
