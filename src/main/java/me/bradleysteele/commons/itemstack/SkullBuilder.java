@@ -61,7 +61,7 @@ public class SkullBuilder extends ItemStackBuilder {
 
             Object property = Reflection.newInstance(Reflection.getClass("com.mojang.authlib.properties.Property"), new Class[] { String.class, String.class }, "textures", new String(data));
 
-            Reflection.invokeMethod(Reflection.getMethod(map.getClass(), "put", String.class, property.getClass()), map, "textures", property);
+            Reflection.invokeMethod(Reflection.getMethod(map.getClass(), "put", Object.class, Object.class), map, "textures", property);
 
             // Apply to meta
             Reflection.setFieldValue("profile", meta, profile);
