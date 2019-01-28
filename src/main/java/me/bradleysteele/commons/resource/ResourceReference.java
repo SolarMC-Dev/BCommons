@@ -55,7 +55,7 @@ public class ResourceReference implements ResourceItem {
     }
 
     public ResourceReference(String child) {
-        this(child, Extension.from(Strings.splitRetrieveLast(child, ".")));
+        this(child, Extension.from(Strings.splitRetrieveLast(child, "\\.")));
     }
 
     @Override
