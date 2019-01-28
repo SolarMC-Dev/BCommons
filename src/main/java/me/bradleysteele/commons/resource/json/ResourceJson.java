@@ -38,7 +38,7 @@ public class ResourceJson extends AbstractResource {
 
     private static final Gson gson = new Gson();
 
-    private JsonObject root;
+    private JsonObject root = new JsonObject();
 
     public ResourceJson(File file, ResourceReference reference, ResourceHandler handler) {
         super(file, reference, handler);
