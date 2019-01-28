@@ -166,21 +166,33 @@ public class ResourceJson extends AbstractResource {
         return new ResourceJson(this, root.getAsJsonObject(path));
     }
 
-    private final Class[] PARAM_TYPES = new Class[] { Object.class };
-
     @Override
     public void set(String path, Object object) {
         if (object instanceof ResourceJson) {
             set(path, ((ResourceJson) object).getConfiguration());
         } else if (object instanceof JsonObject) {
             root.add(path, (JsonObject) object);
+        } else if (object instanceof List) {
+            JsonArray array = new JsonArray();
+
+            for (Object obj : (List) object) {
+                array.add(newJsonPrimitive(obj));
+            }
+
+            root.add(path, array);
         } else {
-            root.add(path, object == null ? JsonNull.INSTANCE : Reflection.newInstance(JsonPrimitive.class, PARAM_TYPES, object));
+            root.add(path, object == null ? JsonNull.INSTANCE : newJsonPrimitive(object));
         }
     }
 
     @Override
     public String toString() {
         return root.toString();
+    }
+
+    private final Class[] PARAM_TYPES = new Class[] { Object.class };
+
+    private JsonPrimitive newJsonPrimitive(Object object) {
+        return Reflection.newInstance(JsonPrimitive.class, PARAM_TYPES, object);
     }
 }
