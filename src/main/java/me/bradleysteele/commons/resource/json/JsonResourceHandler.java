@@ -42,8 +42,7 @@ public class JsonResourceHandler implements ResourceHandler<ResourceJson> {
         try (BufferedReader in = new BufferedReader(new InputStreamReader(new FileInputStream(resource.getFile())))) {
             resource.setConfiguration(parser.parse(in).getAsJsonObject());
         } catch (Exception e) {
-            StaticLog.error(String.format("An Exception occurred when trying to load &c%s&r:", resource.getReference()));
-            StaticLog.exception(e);
+            // Ignored
         }
 
         return resource;
