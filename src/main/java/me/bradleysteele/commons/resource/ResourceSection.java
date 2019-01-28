@@ -121,4 +121,8 @@ public interface ResourceSection extends ResourceItem {
     default List<String> getStringList(String path) {
         return getList(path, String.class);
     }
+
+    default ResourceSection getOrCreateSection(String section) {
+        return contains(section) ? getSection(section) : createSection(section);
+    }
 }
