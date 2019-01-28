@@ -33,9 +33,11 @@ public class ConsoleLog {
 
     /**
      * @param message the message to log.
+     * @param args    arguments referenced by the format specifiers
+     *                in the format string.
      */
-    public void log(String message) {
-        Bukkit.getConsoleSender().sendMessage(message);
+    public void log(String message, Object... args) {
+        Bukkit.getConsoleSender().sendMessage(String.format(message, args));
     }
 
     /**
@@ -55,32 +57,40 @@ public class ConsoleLog {
     /**
      * @param level   severity of the log.
      * @param message the message to log.
+     * @param args    arguments referenced by the format specifiers
+     *                in the format string.
      */
-    public void log(ConsoleLevel level, String message) {
+    public void log(ConsoleLevel level, String message, Object... args) {
         log(Messages.colour(logFormat
                 .replace("{bcommons_log_level}", level.getTagColour() + level.getTag() + ChatColor.RESET)
-                .replace("{bcommons_log_message}", message)));
+                .replace("{bcommons_log_message}", message)), args);
     }
 
     /**
      * @param message the message to debug.
+     * @param args    arguments referenced by the format specifiers
+     *                in the format string.
      */
-    public void debug(String message) {
-        log(ConsoleLevel.DEBUG, message);
+    public void debug(String message, Object... args) {
+        log(ConsoleLevel.DEBUG, message, args);
     }
 
     /**
      * @param message the message to inform.
+     * @param args    arguments referenced by the format specifiers
+     *                in the format string.
      */
-    public void info(String message) {
-        log(ConsoleLevel.INFO, message);
+    public void info(String message, Object... args) {
+        log(ConsoleLevel.INFO, message, args);
     }
 
     /**
      * @param message the message to warn.
+     * @param args    arguments referenced by the format specifiers
+     *                in the format string.
      */
-    public void warn(String message) {
-        log(ConsoleLevel.WARN, message);
+    public void warn(String message, Object... args) {
+        log(ConsoleLevel.WARN, message, args);
     }
 
     /**
@@ -97,9 +107,11 @@ public class ConsoleLog {
 
     /**
      * @param message the message to error.
+     * @param args    arguments referenced by the format specifiers
+     *                in the format string.
      */
-    public void error(String message) {
-        log(ConsoleLevel.ERROR, message);
+    public void error(String message, Object... args) {
+        log(ConsoleLevel.ERROR, message, args);
     }
 
     public String getFormat() {
