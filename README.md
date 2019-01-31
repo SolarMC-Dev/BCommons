@@ -13,7 +13,7 @@ BCommons is hosted on maven's central repository, below are examples of how to i
 <dependency>
   <groupId>me.bradleysteele</groupId>
   <artifactId>commons</artifactId>
-  <version>VERSION/version>
+  <version>VERSION</version>
 </dependency>
 ```
 
