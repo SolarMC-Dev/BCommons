@@ -1,8 +1,7 @@
 # BCommons
-Provides reusable and maintainable Spigot components.
-BCommons is automatically built with [Jenkins](https://ci.bradleysteele.me/job/BCommons/) on commit pushes. Stable releases can be found below, hosted on Maven Central.
+Provides reusable and maintainable Spigot components. Stable releases can be found below, hosted on Maven Central.
 
-[![Maven Central](https://img.shields.io/maven-central/v/me.bradleysteele/commons.svg?label=maven-central)](https://search.maven.org/artifact/me.bradleysteele/commons/) [![Build Status](https://ci.bradleysteele.me/job/BCommons/badge/icon)](https://ci.bradleysteele.me/job/BCommons) [![License](https://img.shields.io/github/license/BradleySteele/BCommons.svg)](https://github.com/BradleySteele/BCommons/blob/master/LICENSE)
+[![Maven Central](https://img.shields.io/maven-central/v/me.bradleysteele/commons.svg?label=maven-central)](https://search.maven.org/artifact/me.bradleysteele/commons/) [![License](https://img.shields.io/github/license/BradleySteele/BCommons.svg)](https://github.com/BradleySteele/BCommons/blob/master/LICENSE)
 
 
 ### Dependency
