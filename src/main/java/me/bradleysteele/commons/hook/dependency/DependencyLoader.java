@@ -49,11 +49,16 @@ public final class DependencyLoader implements Registrable {
         try {
             if (!folder.exists()) {
                 Files.createDirectories(folder.toPath());
-                Files.setAttribute(folder.toPath(), "dos:hidden", true);
+
+                if (!System.getProperty("os.name").toLowerCase().contains("mac")) {
+                    Files.setAttribute(folder.toPath(), "dos:hidden", true);
+                }
             }
         } catch (IOException e) {
             StaticLog.error("Failed to load dependency folder:");
             StaticLog.exception(e);
+        } catch (Exception e) {
+            // Ignored
         }
     }
 
