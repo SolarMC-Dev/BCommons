@@ -16,19 +16,22 @@
 
 package me.bradleysteele.commons.util;
 
+import com.google.common.base.Charsets;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import org.apache.commons.codec.binary.Base64;
-import org.apache.commons.io.IOUtils;
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
-import org.json.simple.JSONValue;
-import org.json.simple.parser.JSONParser;
-import org.json.simple.parser.ParseException;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClientBuilder;
+import org.apache.http.util.EntityUtils;
 
 import java.io.IOException;
-import java.net.URL;
 import java.util.UUID;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
@@ -38,7 +41,8 @@ import java.util.concurrent.TimeUnit;
  */
 public final class OfflinePlayers {
 
-    private static final JSONParser parser = new JSONParser();
+    private static final JsonParser parser = new JsonParser();
+    private static final CloseableHttpClient client = HttpClientBuilder.create().build();
 
     private static final String ENDPOINT_SESSIONSERVER = "https://sessionserver.mojang.com/session/minecraft/profile/%s";
     private static final String ENDPOINT_PROFILES_NAMES = "https://api.mojang.com/user/profiles/%s/names";
@@ -51,8 +55,8 @@ public final class OfflinePlayers {
 
                 @Override
                 public UUID load(String name) throws Exception {
-                    JSONObject object = (JSONObject) JSONValue.parseWithException(getResponseAsString(String.format(ENDPOINT_PROFILES, name)));
-                    return UUID.fromString(object.get("id").toString().replaceAll("(\\w{8})(\\w{4})(\\w{4})(\\w{4})(\\w{12})","$1-$2-$3-$4-$5"));
+                    JsonObject object = getResponse(String.format(ENDPOINT_PROFILES, name)).getAsJsonObject();
+                    return UUID.fromString(object.get("id").getAsString().replaceAll("(\\w{8})(\\w{4})(\\w{4})(\\w{4})(\\w{12})","$1-$2-$3-$4-$5"));
                 }
             });
 
@@ -65,11 +69,11 @@ public final class OfflinePlayers {
                    public String load(UUID uuid) throws Exception {
                        // Dashes have to be removed from the UUID when passing it
                        // through Mojang API URLs.
-                       JSONArray array = (JSONArray) JSONValue.parseWithException(getResponseAsString(String.format(ENDPOINT_PROFILES_NAMES, uuid.toString().replace("-", ""))));
+                       JsonArray array = getResponse(String.format(ENDPOINT_PROFILES_NAMES, uuid.toString().replace("-", ""))).getAsJsonArray();
 
                        // Get the last object (current name) in the array.
-                       JSONObject object = (JSONObject) JSONValue.parseWithException(array.get(array.size() - 1).toString());
-                       return object.get("name").toString();
+                       JsonObject object = (JsonObject) parser.parse(array.get(array.size() - 1).toString());
+                       return object.get("name").getAsString();
                    }
                });
 
@@ -79,20 +83,20 @@ public final class OfflinePlayers {
             .build(new CacheLoader<UUID, String>() {
 
                 @Override
-                public String load(UUID uuid) throws Exception {
+                public String load(UUID uuid) {
                     try {
-                        JSONObject object = (JSONObject) JSONValue.parseWithException(IOUtils.toString(new URL(String.format(ENDPOINT_SESSIONSERVER, uuid.toString().replace("-", "")))));
-                        JSONArray array = (JSONArray) object.get("properties");
-                        JSONObject properties = (JSONObject) array.get(array.size() - 1);
+                        JsonObject object = getResponse(String.format(ENDPOINT_SESSIONSERVER, uuid.toString().replace("-", ""))).getAsJsonObject();
+                        JsonArray array = (JsonArray) object.get("properties");
+                        JsonObject properties = (JsonObject) array.get(array.size() - 1);
 
                         // texture
-                        JSONObject value = (JSONObject) parser.parse(new String(Base64.decodeBase64(properties.get("value").toString().getBytes())));
-                        JSONObject textures = (JSONObject) value.get("textures");
-                        JSONObject skin = (JSONObject) textures.get("SKIN");
+                        JsonObject value = (JsonObject) parser.parse(new String(Base64.decodeBase64(properties.get("value").toString().getBytes())));
+                        JsonObject textures = (JsonObject) value.get("textures");
+                        JsonObject skin = (JsonObject) textures.get("SKIN");
 
                         return skin.get("url").toString();
-                    } catch (ParseException | IOException e) {
-                        // Ignored
+                    } catch (Exception e) {
+                        e.printStackTrace();
                     }
 
                     return null;
@@ -103,7 +107,7 @@ public final class OfflinePlayers {
         try {
             return uuidCache.get(name);
         } catch (ExecutionException e) {
-            // Ignored
+            e.printStackTrace();
         }
 
         return null;
@@ -133,7 +137,7 @@ public final class OfflinePlayers {
         try {
             return nameCache.get(uuid);
         } catch (ExecutionException e) {
-            // Ignored
+            e.printStackTrace();
         }
 
         return fallback;
@@ -151,7 +155,7 @@ public final class OfflinePlayers {
         try {
             return skinCache.get(uuid);
         } catch (ExecutionException e) {
-            // Ignored
+            e.printStackTrace();
         }
 
         return null;
@@ -161,11 +165,8 @@ public final class OfflinePlayers {
         return getSkinURL(uuid, false);
     }
 
-    private static String getResponseAsString(URL url) throws IOException {
-        return IOUtils.toString(url);
-    }
-
-    private static String getResponseAsString(String url) throws IOException {
-        return getResponseAsString(new URL(url));
+    private static JsonElement getResponse(String url) throws IOException {
+        HttpResponse response = client.execute(new HttpGet(url));
+        return parser.parse(EntityUtils.toString(response.getEntity(), Charsets.UTF_8));
     }
 }

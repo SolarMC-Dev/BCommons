@@ -19,13 +19,14 @@ package me.bradleysteele.commons.hook.dependency;
 import me.bradleysteele.commons.BPlugin;
 import me.bradleysteele.commons.register.Registrable;
 import me.bradleysteele.commons.util.logging.StaticLog;
-import org.apache.commons.io.FileUtils;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
 import java.util.Arrays;
 
 /**
@@ -85,7 +86,9 @@ public final class DependencyLoader implements Registrable {
 
         try {
             if (!file.exists()) {
-                FileUtils.copyURLToFile(url, file);
+                try (InputStream input = url.openStream()) {
+                    Files.copy(input, file.toPath(), StandardCopyOption.REPLACE_EXISTING);
+                }
             }
         } catch (IOException e) {
             StaticLog.error(String.format("Failed to load dependency &c%s&r:", dependency.getFileName()));
