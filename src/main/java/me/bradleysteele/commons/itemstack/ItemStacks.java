@@ -45,6 +45,10 @@ public final class ItemStacks {
         return NBTReflection.isLegacy() && material == PLAYER_HEAD ? new SkullBuilder() : new ItemStackBuilder(material);
     }
 
+    public static ItemStackBuilder builder(ItemStackBuilder builder) {
+        return new ItemStackBuilder(builder);
+    }
+
     public static ItemStackBuilder builder(ItemStack item) {
         return new ItemStackBuilder(item);
     }
