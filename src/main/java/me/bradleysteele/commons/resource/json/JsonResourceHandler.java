@@ -16,9 +16,7 @@
 
 package me.bradleysteele.commons.resource.json;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonParser;
+import me.bradleysteele.commons.gson.StaticGson;
 import me.bradleysteele.commons.resource.*;
 import me.bradleysteele.commons.util.logging.StaticLog;
 
@@ -30,17 +28,12 @@ import java.util.List;
  */
 public class JsonResourceHandler implements ResourceHandler<ResourceJson> {
 
-    private static final JsonParser parser = new JsonParser();
-    private static final Gson gson = new GsonBuilder()
-            .setPrettyPrinting()
-            .create();
-
     @Override
     public ResourceJson load(ResourceProvider provider, ResourceReference reference) {
         ResourceJson resource = new ResourceJson(new File(provider.getDataFolder() + reference.getSeparatorPathStart(), reference.getChild()), reference, this);
 
         try (BufferedReader in = new BufferedReader(new InputStreamReader(new FileInputStream(resource.getFile())))) {
-            resource.setConfiguration(parser.parse(in).getAsJsonObject());
+            resource.setConfiguration(StaticGson.JSON_PARSER.parse(in).getAsJsonObject());
         } catch (Exception e) {
             // Ignored
         }
@@ -52,7 +45,7 @@ public class JsonResourceHandler implements ResourceHandler<ResourceJson> {
     public void save(ResourceJson resource) {
         try {
             OutputStreamWriter out = new OutputStreamWriter(new FileOutputStream(resource.getFile()));
-            out.write(gson.toJson(resource.getConfiguration()));
+            out.write(StaticGson.RAW_GSON_PRETTY.toJson(resource.getConfiguration()));
             out.close();
         } catch (IOException e) {
             StaticLog.error("An IOException occurred when trying to save [&c" + resource.getReference() + "&r]:");

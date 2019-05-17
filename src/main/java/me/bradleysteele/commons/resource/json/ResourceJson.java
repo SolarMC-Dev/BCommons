@@ -18,6 +18,7 @@ package me.bradleysteele.commons.resource.json;
 
 import com.google.gson.*;
 import com.google.gson.reflect.TypeToken;
+import me.bradleysteele.commons.gson.StaticGson;
 import me.bradleysteele.commons.resource.AbstractResource;
 import me.bradleysteele.commons.resource.ResourceHandler;
 import me.bradleysteele.commons.resource.ResourceReference;
@@ -35,8 +36,6 @@ import java.util.stream.Collectors;
  * @author Bradley Steele
  */
 public class ResourceJson extends AbstractResource {
-
-    private static final Gson gson = new Gson();
 
     private JsonObject root = new JsonObject();
 
@@ -158,7 +157,7 @@ public class ResourceJson extends AbstractResource {
 
     @Override
     public <T> List<T> getList(String path, Class<T> clazz) {
-        return gson.fromJson(root.getAsJsonArray(path), new TypeToken<ArrayList<T>>(){}.getType());
+        return StaticGson.RAW_GSON.fromJson(root.getAsJsonArray(path), new TypeToken<ArrayList<T>>(){}.getType());
     }
 
     @Override
