@@ -42,7 +42,7 @@ import java.util.stream.Stream;
  *
  * @author Bradley Steele
  */
-public class BPlugin extends JavaPlugin {
+public abstract class BPlugin extends JavaPlugin {
 
     private final List<Registrable> registers = Lists.newArrayList();
 
