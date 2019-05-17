@@ -70,7 +70,7 @@ public class SkullBuilder extends ItemStackBuilder {
         item.setItemMeta(meta);
 
         // NBTs must be applied AFTER meta is applied.
-        for (Applier applier : this.getNbtAppliers()) {
+        for (Applier applier : this.getNBTAppliers()) {
             item = applier.apply(item);
         }
 
