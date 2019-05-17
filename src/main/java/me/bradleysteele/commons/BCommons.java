@@ -51,7 +51,7 @@ public class BCommons extends BPlugin {
     public void enable() {
         Logger.getLogger("BPlugin").addHandler(new ConsoleLogHandler());
 
-        this.console.info("Server NMS package version: %s", NMSReflection.getPackageVersion());
+        this.console.info("Server NMS package version: &e%s &7(legacy: &e%s&7).", NMSReflection.getPackageVersion(), NMSReflection.isLegacy());
         this.register(WorkerBInventory.class);
     }
 }
