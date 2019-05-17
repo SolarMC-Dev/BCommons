@@ -18,7 +18,6 @@ package me.bradleysteele.commons.hook.dependency;
 
 import me.bradleysteele.commons.BPlugin;
 import me.bradleysteele.commons.register.Registrable;
-import me.bradleysteele.commons.util.logging.StaticLog;
 
 import java.io.File;
 import java.io.IOException;
@@ -56,8 +55,8 @@ public final class DependencyLoader implements Registrable {
                 }
             }
         } catch (IOException e) {
-            StaticLog.error("Failed to load dependency folder:");
-            StaticLog.exception(e);
+            plugin.getConsole().error("Failed to load dependency folder:");
+            plugin.getConsole().exception(e);
         } catch (Exception e) {
             // Ignored
         }
@@ -86,13 +85,15 @@ public final class DependencyLoader implements Registrable {
 
         try {
             if (!file.exists()) {
+                plugin.getConsole().info("Downloading dependency &a%s&r.", dependency.getFileName());
+
                 try (InputStream input = url.openStream()) {
                     Files.copy(input, file.toPath(), StandardCopyOption.REPLACE_EXISTING);
                 }
             }
         } catch (IOException e) {
-            StaticLog.error(String.format("Failed to load dependency &c%s&r:", dependency.getFileName()));
-            StaticLog.exception(e);
+            plugin.getConsole().error("Failed to load dependency &c%s&r:", dependency.getFileName());
+            plugin.getConsole().exception(e);
         }
     }
 
