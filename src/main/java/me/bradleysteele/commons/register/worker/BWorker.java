@@ -19,7 +19,9 @@ package me.bradleysteele.commons.register.worker;
 import me.bradleysteele.commons.BPlugin;
 import me.bradleysteele.commons.register.Registrable;
 import me.bradleysteele.commons.util.logging.StaticLog;
+import me.bradleysteele.commons.util.reflect.Reflection;
 import org.bukkit.Bukkit;
+import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
 import org.bukkit.scheduler.BukkitTask;
 
@@ -27,6 +29,13 @@ import org.bukkit.scheduler.BukkitTask;
  * @author Bradley Steele
  */
 public class BWorker implements Registrable, Listener, Runnable {
+
+    private static final boolean HAS_IS_CANCELLED;
+
+    static {
+        // Check for 1.8
+        HAS_IS_CANCELLED = Reflection.hasMethod(BukkitTask.class, "isCancelled");
+    }
 
     protected BPlugin plugin;
 
@@ -44,10 +53,19 @@ public class BWorker implements Registrable, Listener, Runnable {
         plugin.getConsole().info(String.format("Registered worker: &a%s&r.", plugin.getLoggableName(this)));
     }
 
-    @Override // Runnable
-    public void run() {
+    @Override // Registrable
+    public void unregister() {
+        // Check the plugin is not disabling
+        if (plugin.isEnabled()) {
+            // Unregister EventHandlers
+            HandlerList.unregisterAll(this);
 
+            setRunning(false);
+        }
     }
+
+    @Override // Runnable
+    public void run() {}
 
     /**
      * @return the ticks to wait until scheduling the task.
@@ -81,7 +99,7 @@ public class BWorker implements Registrable, Listener, Runnable {
      * @return whether the task is running.
      */
     public boolean isRunning() {
-        return task != null && !task.isCancelled();
+        return task != null && (!HAS_IS_CANCELLED || !task.isCancelled());
     }
 
     /**
