@@ -18,6 +18,7 @@ package me.bradleysteele.commons;
 
 import me.bradleysteele.commons.hook.dependency.DependencyLoader;
 import me.bradleysteele.commons.hook.dependency.MavenDependency;
+import me.bradleysteele.commons.nms.NMSReflection;
 import me.bradleysteele.commons.util.logging.ConsoleLogHandler;
 import me.bradleysteele.commons.worker.WorkerBInventory;
 
@@ -50,6 +51,7 @@ public class BCommons extends BPlugin {
     public void enable() {
         Logger.getLogger("BPlugin").addHandler(new ConsoleLogHandler());
 
+        this.console.info("Server NMS package version: %s", NMSReflection.getPackageVersion());
         this.register(WorkerBInventory.class);
     }
 }
