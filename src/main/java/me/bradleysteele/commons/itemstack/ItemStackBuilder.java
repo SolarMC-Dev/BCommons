@@ -18,9 +18,9 @@ package me.bradleysteele.commons.itemstack;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
 import me.bradleysteele.commons.itemstack.nbt.NBTItemStack;
 import me.bradleysteele.commons.util.Messages;
-import me.bradleysteele.commons.util.reflect.Reflection;
 import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemFlag;
@@ -30,6 +30,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * @author Bradley Steele
@@ -45,7 +46,7 @@ public class ItemStackBuilder {
     private String displayName;
     private List<String> lore = Lists.newArrayList();
     private boolean unbreakable = false;
-    private final List<ItemFlag> itemFlags = Lists.newArrayList();
+    private final Set<ItemFlag> itemFlags = Sets.newHashSet();
 
     private final Map<Enchantment, Integer> enchantments = Maps.newHashMap();
 
@@ -60,23 +61,44 @@ public class ItemStackBuilder {
     }
 
     /**
-     * @param item the item to unpack.
+     * @param stack the stack to unpack.
      */
-    protected ItemStackBuilder(ItemStack item) {
-        this(item.getType());
+    protected ItemStackBuilder(ItemStack stack) {
+        this(stack.getType());
 
-        withAmount(item.getAmount());
-        withDurability(item.getDurability());
+        amount = stack.getAmount();
+        durability = stack.getDurability();
 
-        if (item.hasItemMeta()) {
-            ItemMeta meta = item.getItemMeta();
+        if (stack.hasItemMeta()) {
+            ItemMeta meta = stack.getItemMeta();
 
-            withDisplayName(meta.getDisplayName());
-            withLore(meta.hasLore() ? meta.getLore() : Lists.newArrayList());
-            withUnbreakable(meta.spigot().isUnbreakable());
+            displayName = meta.getDisplayName();
+            lore = meta.hasLore() ? meta.getLore() : Lists.newArrayList();
+            unbreakable = meta.spigot().isUnbreakable();
+            itemFlags.addAll(meta.getItemFlags());
         }
+
+        enchantments.putAll(stack.getEnchantments());
     }
 
+    protected ItemStackBuilder(ItemStackBuilder builder) {
+        this(builder.getMaterial());
+
+        amount = builder.amount;
+        durability = builder.durability;
+
+        displayName = builder.displayName;
+        lore = Lists.newArrayList(builder.lore);
+        unbreakable = builder.unbreakable;
+        itemFlags.addAll(Lists.newArrayList(builder.itemFlags));
+        enchantments.putAll(Maps.newHashMap(builder.enchantments));
+
+        nbtAppliers.addAll(Lists.newArrayList(builder.nbtAppliers));
+    }
+
+    /**
+     * @return builds the {@link ItemStackBuilder}'s data into a valid {@link ItemStack}.
+     */
     public ItemStack build() {
         ItemStack stack = new ItemStack(material, amount, durability);
         ItemMeta meta = stack.getItemMeta();
@@ -100,61 +122,139 @@ public class ItemStackBuilder {
         return stack;
     }
 
+    /**
+     * @return a copy of this {@link ItemStackBuilder}.
+     */
+    public ItemStackBuilder deepClone() {
+        return new ItemStackBuilder(this);
+    }
+
+    /**
+     * @param material the stack type.
+     * @return this item stack builder.
+     *
+     * @see Material
+     */
     public ItemStackBuilder withMaterial(Material material) {
         this.material = material;
         return this;
     }
 
+    /**
+     * @param amount the stack amount.
+     * @return this item stack builder.
+     */
     public ItemStackBuilder withAmount(int amount) {
         this.amount = amount;
         return this;
     }
 
+    /**
+     * @param durability the stack data value.
+     * @return this item stack builder.
+     */
     public ItemStackBuilder withDurability(short durability) {
         this.durability = durability;
         return this;
     }
 
+    /**
+     * @param displayName the stack display name.
+     * @return this item stack builder.
+     */
     public ItemStackBuilder withDisplayName(String displayName) {
         this.displayName = displayName;
         return this;
     }
 
+    /**
+     * Colours and sets the item stack display name.
+     *
+     * @param displayName the stack display name.
+     * @return this item stack builder.
+     *
+     * @see Messages#colour(String)
+     */
     public ItemStackBuilder withDisplayNameColoured(String displayName) {
         this.displayName = Messages.colour(displayName);
         return this;
     }
 
+    /**
+     * @param lore the stack lore.
+     * @return this item stack builder.
+     */
     public ItemStackBuilder withLore(Iterable<? extends String> lore) {
         this.lore = Lists.newArrayList(lore);
         return this;
     }
 
+    /**
+     * Colours and sets the item stack lore.
+     *
+     * @param lore the stack lore.
+     * @return this item stack builder.
+     *
+     * @see Messages#colour(Iterable)
+     */
     public ItemStackBuilder withLoreColoured(Iterable<? extends String> lore) {
         this.lore = Messages.colour(lore);
         return this;
     }
 
+    /**
+     * @param unbreakable if the stack is unbreakable.
+     * @return this item stack builder.
+     */
     public ItemStackBuilder withUnbreakable(boolean unbreakable) {
         this.unbreakable = unbreakable;
         return this;
     }
 
+    /**
+     * @param flag the stack item flags.
+     * @return this item stack builder.
+     *
+     * @see ItemFlag
+     */
     public ItemStackBuilder withItemFlag(ItemFlag... flag) {
         itemFlags.addAll(Arrays.asList(flag));
         return this;
     }
 
+    /**
+     * Adds, and overrides existing enchantment type, an enchantment to
+     * the stack.
+     *
+     * @param enchantment the enchantment type.
+     * @param level       the enchantment level.
+     * @return this item stack builder.
+     *
+     * @see Enchantment
+     */
     public ItemStackBuilder withEnchantment(Enchantment enchantment, int level) {
         enchantments.put(enchantment, level);
         return this;
     }
 
+    /**
+     * @param enchantments map of enchantments and their levels.
+     * @return this item stack.
+     *
+     * @see Enchantment
+     */
     public ItemStackBuilder withEnchantments(Map<Enchantment, Integer> enchantments) {
         this.enchantments.putAll(enchantments);
         return this;
     }
 
+    /**
+     * @param key   the NBT key.
+     * @param value the NBT string value.
+     * @return this item stack builder.
+     *
+     * @see NBTItemStack
+     */
     public ItemStackBuilder withNBTString(String key, String value) {
         nbtAppliers.add(item -> {
             NBTItemStack nbtItem = ItemStacks.toNBTItemStack(item);
@@ -165,6 +265,13 @@ public class ItemStackBuilder {
         return this;
     }
 
+    /**
+     * @param key   the NBT key.
+     * @param value the NBT integer value.
+     * @return this item stack builder.
+     *
+     * @see NBTItemStack
+     */
     public ItemStackBuilder withNBTInteger(String key, int value) {
         nbtAppliers.add(item -> {
             NBTItemStack nbtItem = ItemStacks.toNBTItemStack(item);
@@ -175,6 +282,13 @@ public class ItemStackBuilder {
         return this;
     }
 
+    /**
+     * @param key   the NBT key.
+     * @param value the NBT double value.
+     * @return this item stack builder.
+     *
+     * @see NBTItemStack
+     */
     public ItemStackBuilder withNBTDouble(String key, double value) {
         nbtAppliers.add(item -> {
             NBTItemStack nbtItem = ItemStacks.toNBTItemStack(item);
@@ -185,6 +299,13 @@ public class ItemStackBuilder {
         return this;
     }
 
+    /**
+     * @param key   the NBT key.
+     * @param value the NBT boolean value.
+     * @return this item stack builder.
+     *
+     * @see NBTItemStack
+     */
     public ItemStackBuilder withNBTBoolean(String key, boolean value) {
         nbtAppliers.add(item -> {
             NBTItemStack nbtItem = ItemStacks.toNBTItemStack(item);
@@ -195,6 +316,13 @@ public class ItemStackBuilder {
         return this;
     }
 
+    /**
+     * @param key   the NBT key.
+     * @param value the NBT value.
+     * @return this item stack builder.
+     *
+     * @see NBTItemStack
+     */
     public ItemStackBuilder withNBTObject(String key, Object value) {
         nbtAppliers.add(item -> {
             NBTItemStack nbtItem = ItemStacks.toNBTItemStack(item);
@@ -205,31 +333,65 @@ public class ItemStackBuilder {
         return this;
     }
 
+    /**
+     * @return stack type.
+     */
     public Material getMaterial() {
         return material;
     }
 
+    /**
+     * @return stack amount.
+     */
     public int getAmount() {
         return amount;
     }
 
+    /**
+     * @return stack data value.
+     */
     public short getDurability() {
         return durability;
     }
 
+    /**
+     * @return stack display name.
+     */
     public String getDisplayName() {
         return displayName;
     }
 
+    /**
+     * @return stack lore.
+     */
     public List<String> getLore() {
         return lore;
     }
 
+    /**
+     * @return {@code true} if the stack is unbreakable.
+     */
     public boolean isUnbreakable() {
         return unbreakable;
     }
 
-    protected List<Applier> getNbtAppliers() {
+    /**
+     * @return set of item flags applied to the stack.
+     *
+     * @see ItemFlag
+     */
+    public Set<ItemFlag> getItemFlags() {
+        return itemFlags;
+    }
+
+    /**
+     * @return map of enchantments and their levels.
+     */
+    public Map<Enchantment, Integer> getEnchantments() {
+        return enchantments;
+    }
+
+    protected List<Applier> getNBTAppliers() {
         return nbtAppliers;
     }
 
