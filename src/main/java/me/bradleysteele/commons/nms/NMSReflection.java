@@ -39,6 +39,8 @@ public final class NMSReflection {
     private static final String PACKAGE_VERSION = Bukkit.getServer().getClass().getPackage().getName()
             .split("\\.")[3];
 
+    private static boolean LEGACY = false;
+
     // Package formats
     private static final String NMS_FORMAT = "net.minecraft.server.%s";
     private static final String CB_FORMAT = "org.bukkit.craftbukkit.%s";
@@ -55,6 +57,12 @@ public final class NMSReflection {
     private static final Method METHOD_CRAFT_PLAYER_GET_HANDLE;
 
     static {
+        try {
+            Class.forName("org.bukkit.GameRule");
+        } catch (ClassNotFoundException e) {
+            LEGACY = true;
+        }
+
         CLASS_CRAFT_PLAYER = getCBClass("entity.CraftPlayer");
         CLASS_ENTITY_PLAYER = getNMSClass("EntityPlayer");
 
@@ -62,6 +70,13 @@ public final class NMSReflection {
     }
 
     private NMSReflection() {}
+
+    /**
+     * @return {@code true} if the server is legacy.
+     */
+    public static boolean isLegacy() {
+        return LEGACY;
+    }
 
     /**
      * Returns the server package version, example: v1_8_R3
