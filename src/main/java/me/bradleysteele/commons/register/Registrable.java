@@ -23,7 +23,9 @@ package me.bradleysteele.commons.register;
  */
 public interface Registrable {
 
-    void register();
+    default void register() {}
+
+    default void unregister() {}
 
     /**
      * Called when a registrable object has been registered.
