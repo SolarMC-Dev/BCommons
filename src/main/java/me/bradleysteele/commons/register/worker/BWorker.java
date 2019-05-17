@@ -26,6 +26,9 @@ import org.bukkit.event.Listener;
 import org.bukkit.scheduler.BukkitTask;
 
 /**
+ * The {@link BWorker} class is a modular task handler,
+ * designed to handle both Bukkit Events and run tasks.
+ *
  * @author Bradley Steele
  */
 public class BWorker implements Registrable, Listener, Runnable {
