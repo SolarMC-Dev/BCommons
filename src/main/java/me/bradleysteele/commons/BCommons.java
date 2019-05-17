@@ -16,7 +16,6 @@
 
 package me.bradleysteele.commons;
 
-import me.bradleysteele.commons.hook.dependency.Dependency;
 import me.bradleysteele.commons.hook.dependency.DependencyLoader;
 import me.bradleysteele.commons.hook.dependency.MavenDependency;
 import me.bradleysteele.commons.util.logging.ConsoleLogHandler;
@@ -40,10 +39,10 @@ public class BCommons extends BPlugin {
                 new MavenDependency("commons-codec", "commons-codec", "1.10"),
 
                 // Oshi
-                new Dependency("oshi-core-3.4.0.jar", "https://cdn.bradleysteele.me/oshi-core-3.4.0"),
-                new Dependency("jna-platform-4.2.2.jar", "https://cdn.bradleysteele.me/jna-platform-4.2.2"),
-                new Dependency("jna-4.2.2.jar", "https://cdn.bradleysteele.me/jna-4.2.2"),
-                new Dependency("slf4j-api-1.7.22.jar", "https://cdn.bradleysteele.me/slf4j-api-1.7.22")
+                new MavenDependency("com.github.oshi", "oshi-core", "3.13.2"),
+                new MavenDependency("net.java.dev.jna", "jna", "5.3.1"),
+                new MavenDependency("net.java.dev.jna", "jna-platform", "5.3.1"),
+                new MavenDependency("org.slf4j", "slf4j-api", "1.7.25")
         );
     }
 
