@@ -18,6 +18,7 @@ package me.bradleysteele.commons;
 
 import me.bradleysteele.commons.hook.dependency.Dependency;
 import me.bradleysteele.commons.hook.dependency.DependencyLoader;
+import me.bradleysteele.commons.hook.dependency.MavenDependency;
 import me.bradleysteele.commons.util.logging.ConsoleLogHandler;
 import me.bradleysteele.commons.worker.WorkerBInventory;
 
@@ -33,10 +34,10 @@ public class BCommons extends BPlugin {
 
         DependencyLoader.get().load(
                 // HttpClient
-                new Dependency("httpclient-4.5.6.jar", "http://central.maven.org/maven2/org/apache/httpcomponents/httpclient/4.5.6/httpclient-4.5.6.jar"),
-                new Dependency("httpcore-4.4.10.jar", "http://central.maven.org/maven2/org/apache/httpcomponents/httpcore/4.4.10/httpcore-4.4.10.jar"),
-                new Dependency("commons-logging-1.2.jar", "http://central.maven.org/maven2/commons-logging/commons-logging/1.2/commons-logging-1.2.jar"),
-                new Dependency("commons-codec-1.10.jar", "http://central.maven.org/maven2/commons-codec/commons-codec/1.10/commons-codec-1.10.jar"),
+                new MavenDependency("org.apache.httpcomponents", "httpclient","4.5.6"),
+                new MavenDependency("org.apache.httpcomponents", "httpcore", "4.4.10"),
+                new MavenDependency("commons-logging", "commons-logging", "1.2"),
+                new MavenDependency("commons-codec", "commons-codec", "1.10"),
 
                 // Oshi
                 new Dependency("oshi-core-3.4.0.jar", "https://cdn.bradleysteele.me/oshi-core-3.4.0"),
