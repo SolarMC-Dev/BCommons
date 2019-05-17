@@ -16,17 +16,21 @@
 
 package me.bradleysteele.commons.inventory;
 
+import me.bradleysteele.commons.util.reflect.Reflection;
 import org.bukkit.Bukkit;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
 
+import java.lang.reflect.Method;
 import java.util.Arrays;
 
 /**
  * @author Bradley Steele
  */
 public final class Inventories {
+
+    private static final Method METHOD_INVENTORY_GET_TITLE = Reflection.getMethod(Inventory.class, "getTitle");
 
     private Inventories() {}
 
@@ -36,7 +40,21 @@ public final class Inventories {
      * @return new inventory with a cloned contents of the provided inventory.
      */
     public static Inventory clone(Inventory inventory, InventoryHolder holder) {
-        Inventory inv = Bukkit.createInventory(holder, inventory.getSize(), inventory.getTitle());
+        if (METHOD_INVENTORY_GET_TITLE == null) {
+            throw new IllegalArgumentException("Inventory#getTitle() is not available in this version");
+        }
+
+        return clone(inventory, holder, Reflection.invokeMethod(METHOD_INVENTORY_GET_TITLE, inventory));
+    }
+
+    /**
+     * @param inventory the inventory to clone.
+     * @param holder    new inventory holder.
+     * @param title     the inventory title.
+     * @return new inventory with a cloned contents of the provided inventory.
+     */
+    public static Inventory clone(Inventory inventory, InventoryHolder holder, String title) {
+        Inventory inv = Bukkit.createInventory(holder, inventory.getSize(), title);
         inv.setContents(inventory.getContents().clone());
 
         return inv;
