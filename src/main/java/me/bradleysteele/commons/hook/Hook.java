@@ -24,7 +24,7 @@ public interface Hook {
     /**
      * Attempts to hook onto the entity.
      */
-    void hook();
+    void hook() throws Exception;
 
     /**
      * Unhooks from the entity.
