@@ -28,8 +28,12 @@ import java.util.Set;
 import java.util.Stack;
 
 /**
+ * @deprecated will be moved to {@link me.bradleysteele.commons.nms} in
+ *             future builds.
+ *
  * @author Bradley Steele
  */
+@Deprecated
 public final class NBTReflection {
 
     private static final Gson gson = new Gson();
@@ -49,10 +53,22 @@ public final class NBTReflection {
         }
     }
 
+    /**
+     * @deprecated will be removed in future builds.
+     *
+     * @return the minecraft server package version.
+     */
+    @Deprecated
     public static String getPackageVersion() {
         return version;
     }
 
+    /**
+     * @deprecated will be removed in future builds.
+     *
+     * @return {@code true} if this version is legacy.
+     */
+    @Deprecated
     public static boolean isLegacy() {
         return legacy;
     }
