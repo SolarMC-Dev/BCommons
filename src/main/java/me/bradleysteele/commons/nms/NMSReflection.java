@@ -31,10 +31,12 @@ public final class NMSReflection {
      * Splits at third period to retrieve the nms package version.
      * <p>
      * Split indexes:
-     * 0 - "net"
-     * 1 - "minecraft"
-     * 2 - "server"
-     * 3 - _version_
+     * <ol start="0">
+     *   <li>net</li>
+     *   <li>minecraft</li>
+     *   <li>server</li>
+     *   <li>__version__</li>
+     * </ol>
      */
     private static final String PACKAGE_VERSION = Bukkit.getServer().getClass().getPackage().getName()
             .split("\\.")[3];
