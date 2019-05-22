@@ -23,6 +23,11 @@ public interface Hook {
 
     /**
      * Attempts to hook onto the entity.
+     *
+     * @throws Exception expects an exception to be thrown
+     *                   when a hook fails, if no exception
+     *                   is thrown, hook is assumed to be
+     *                   successful.
      */
     void hook() throws Exception;
 
