@@ -27,49 +27,23 @@ import java.lang.reflect.Method;
  */
 public final class NMSReflection {
 
-    /**
-     * Splits at third period to retrieve the nms package version.
-     * <p>
-     * Split indexes:
-     * <ol start="0">
-     *   <li>net</li>
-     *   <li>minecraft</li>
-     *   <li>server</li>
-     *   <li>__version__</li>
-     * </ol>
-     */
-    private static final String PACKAGE_VERSION = Bukkit.getServer().getClass().getPackage().getName()
-            .split("\\.")[3];
-
     private static boolean LEGACY = false;
-
-    // Package formats
-    private static final String NMS_FORMAT = "net.minecraft.server.%s";
-    private static final String CB_FORMAT = "org.bukkit.craftbukkit.%s";
-
-    private static final ClassCache NMS_CLASS_CACHE = new ClassCache(String.format(NMS_FORMAT, PACKAGE_VERSION));
-    private static final ClassCache CB_CLASS_CACHE = new ClassCache(String.format(CB_FORMAT, PACKAGE_VERSION));
-
-
-    // Reflection
-
-    public static final Class<?> CLASS_CRAFT_PLAYER;
-    public static final Class<?> CLASS_ENTITY_PLAYER;
-
-    private static final Method METHOD_CRAFT_PLAYER_GET_HANDLE;
-
     static {
         try {
             Class.forName("org.bukkit.GameRule");
         } catch (ClassNotFoundException e) {
             LEGACY = true;
         }
-
-        CLASS_CRAFT_PLAYER = getCBClass("entity.CraftPlayer");
-        CLASS_ENTITY_PLAYER = getNMSClass("EntityPlayer");
-
-        METHOD_CRAFT_PLAYER_GET_HANDLE = Reflection.getMethod(CLASS_CRAFT_PLAYER, "getHandle");
     }
+
+    // Package formats
+    private static final String NMS_FORMAT = "net.minecraft.server.%s";
+    private static final String CB_FORMAT = "org.bukkit.craftbukkit.%s";
+
+    // Reflection cache
+    private static final ClassCache NMS_CLASS_CACHE = new ClassCache(String.format(NMS_FORMAT, getPackageVersion()));
+    private static final ClassCache CB_CLASS_CACHE = new ClassCache(String.format(CB_FORMAT, getPackageVersion()));
+
 
     private NMSReflection() {}
 
@@ -80,12 +54,25 @@ public final class NMSReflection {
         return LEGACY;
     }
 
+    private static String PACKAGE_VERSION;
+
     /**
      * Returns the server package version, example: v1_8_R3
      *
      * @return minecraft server package version.
      */
     public static String getPackageVersion() {
+        if (PACKAGE_VERSION == null) {
+            // [0] - net
+            // [1] - minecraft
+            // [2] - server
+            // [3] - VERSION
+            PACKAGE_VERSION = Bukkit.getServer().getClass()
+                    .getPackage()
+                    .getName()
+                    .split("\\.")[3];
+        }
+
         return PACKAGE_VERSION;
     }
 
@@ -108,13 +95,35 @@ public final class NMSReflection {
     // Util
 
     /**
+     * @return nms EntityPlayer class.
+     */
+    public static Class<?> getEntityPlayer() {
+        return getNMSClass("EntityPlayer");
+    }
+
+    private static Method METHOD_CRAFT_PLAYER_GET_HANDLE;
+
+    /**
      * Returns the result of invoking the getHandle method on the
      * provided player object.
      *
      * @param player the craft player.
      * @return the player's handle.
+     *
+     * @see #getEntityPlayer()
      */
     public static Object getEntityPlayer(Player player) {
+        if (METHOD_CRAFT_PLAYER_GET_HANDLE == null) {
+            METHOD_CRAFT_PLAYER_GET_HANDLE = Reflection.getMethod(getCraftPlayer(), "getHandle");
+        }
+
         return Reflection.invokeMethod(METHOD_CRAFT_PLAYER_GET_HANDLE, player);
+    }
+
+    /**
+     * @return craft bukkit CraftPlayer class.
+     */
+    public static Class<?> getCraftPlayer() {
+        return getCBClass("entity.CraftPlayer");
     }
 }

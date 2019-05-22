@@ -27,26 +27,9 @@ import java.lang.reflect.Method;
  */
 public final class NMSPackets {
 
-    // Classes
-    public static final Class<?> CLASS_PACKET;
-    public static final Class<?> CLASS_PLAYER_CONNECTION;
-
-    // Fields
-    private static final Field FIELD_ENTITY_PLAYER_PLAYER_CONNECTION;
-
-    // Methods
-    private static final Method METHOD_PLAYER_CONNECTION_SEND_PACKET;
-
-    static {
-        CLASS_PACKET = NMSReflection.getNMSClass("Packet");
-        CLASS_PLAYER_CONNECTION = NMSReflection.getNMSClass("PlayerConnection");
-
-        FIELD_ENTITY_PLAYER_PLAYER_CONNECTION = Reflection.getField(NMSReflection.CLASS_ENTITY_PLAYER, "playerConnection");
-
-        METHOD_PLAYER_CONNECTION_SEND_PACKET = Reflection.getMethod(CLASS_PLAYER_CONNECTION, "sendPacket", CLASS_PACKET);
-    }
-
     private NMSPackets() {}
+
+    private static Method METHOD_PLAYER_CONNECTION_SEND_PACKET;
 
     /**
      * Sends packets to the provided player.
@@ -55,12 +38,26 @@ public final class NMSPackets {
      * @param packets packets to send to the receiver.
      */
     public static void sendPacket(Player player, Object... packets) {
+        if (METHOD_PLAYER_CONNECTION_SEND_PACKET == null) {
+            METHOD_PLAYER_CONNECTION_SEND_PACKET = Reflection.getMethod(getPlayerConnection(), "sendPacket", getPacket());
+        }
+
         Object connection = getPlayerConnection(player);
 
         for (Object packet : packets) {
             Reflection.invokeMethod(METHOD_PLAYER_CONNECTION_SEND_PACKET, connection, packet);
         }
     }
+
+    public static Class<?> getPacket() {
+        return NMSReflection.getNMSClass("Packet");
+    }
+
+    public static Class<?> getPlayerConnection() {
+        return NMSReflection.getNMSClass("PlayerConnection");
+    }
+
+    private static Field FIELD_ENTITY_PLAYER_PLAYER_CONNECTION;
 
     /**
      * Returns the PlayerConnection object of the Player.
@@ -69,6 +66,10 @@ public final class NMSPackets {
      * @return the player's PlayerConnection instance.
      */
     public static Object getPlayerConnection(Player player) {
+        if (FIELD_ENTITY_PLAYER_PLAYER_CONNECTION == null) {
+            FIELD_ENTITY_PLAYER_PLAYER_CONNECTION = Reflection.getField(NMSReflection.getEntityPlayer(), "playerConnection");
+        }
+
         return Reflection.getFieldValue(FIELD_ENTITY_PLAYER_PLAYER_CONNECTION, NMSReflection.getEntityPlayer(player));
     }
 }
