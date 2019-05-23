@@ -62,8 +62,7 @@ public abstract class PluginHook implements Registrable, Hook {
 
     private void hook0() {
         try {
-            this.hook();
-            setHooked(true);
+            setHooked(this.hook());
         } catch (Exception e) {
             // Ignored
             setHooked(false);
