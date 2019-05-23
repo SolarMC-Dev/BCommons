@@ -33,7 +33,6 @@ import org.apache.http.util.EntityUtils;
 
 import java.io.IOException;
 import java.util.UUID;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -72,7 +71,7 @@ public final class OfflinePlayers {
                        JsonArray array = getResponse(String.format(ENDPOINT_PROFILES_NAMES, uuid.toString().replace("-", ""))).getAsJsonArray();
 
                        // Get the last object (current name) in the array.
-                       JsonObject object = (JsonObject) parser.parse(array.get(array.size() - 1).toString());
+                       JsonObject object = parser.parse(array.get(array.size() - 1).toString()).getAsJsonObject();
                        return object.get("name").getAsString();
                    }
                });
@@ -83,31 +82,25 @@ public final class OfflinePlayers {
             .build(new CacheLoader<UUID, String>() {
 
                 @Override
-                public String load(UUID uuid) {
-                    try {
-                        JsonObject object = getResponse(String.format(ENDPOINT_SESSIONSERVER, uuid.toString().replace("-", ""))).getAsJsonObject();
-                        JsonArray array = (JsonArray) object.get("properties");
-                        JsonObject properties = (JsonObject) array.get(array.size() - 1);
+                public String load(UUID uuid) throws Exception {
+                    JsonObject object = getResponse(String.format(ENDPOINT_SESSIONSERVER, uuid.toString().replace("-", ""))).getAsJsonObject();
+                    JsonArray array = object.get("properties").getAsJsonArray();
+                    JsonObject properties = array.get(array.size() - 1).getAsJsonObject();
 
-                        // texture
-                        JsonObject value = (JsonObject) parser.parse(new String(Base64.decodeBase64(properties.get("value").toString().getBytes())));
-                        JsonObject textures = (JsonObject) value.get("textures");
-                        JsonObject skin = (JsonObject) textures.get("SKIN");
+                    // texture
+                    JsonObject value = parser.parse(new String(Base64.decodeBase64(properties.get("value").toString().getBytes()))).getAsJsonObject();
+                    JsonObject textures = value.get("textures").getAsJsonObject();
+                    JsonObject skin = textures.get("SKIN").getAsJsonObject();
 
-                        return skin.get("url").toString();
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-
-                    return null;
+                    return skin.get("url").getAsString();
                 }
             });
 
     public static UUID getUUID(String name) {
         try {
             return uuidCache.get(name);
-        } catch (ExecutionException e) {
-            e.printStackTrace();
+        } catch (Exception e) {
+            // Ignored
         }
 
         return null;
@@ -136,8 +129,8 @@ public final class OfflinePlayers {
 
         try {
             return nameCache.get(uuid);
-        } catch (ExecutionException e) {
-            e.printStackTrace();
+        } catch (Exception e) {
+            // Ignored
         }
 
         return fallback;
@@ -154,8 +147,8 @@ public final class OfflinePlayers {
 
         try {
             return skinCache.get(uuid);
-        } catch (ExecutionException e) {
-            e.printStackTrace();
+        } catch (Exception e) {
+            // Ignored
         }
 
         return null;
