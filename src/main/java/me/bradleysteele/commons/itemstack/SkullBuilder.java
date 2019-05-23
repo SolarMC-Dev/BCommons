@@ -16,9 +16,11 @@
 
 package me.bradleysteele.commons.itemstack;
 
+import me.bradleysteele.commons.nms.wrapped.profile.NMSGameProfile;
+import me.bradleysteele.commons.nms.wrapped.profile.NMSProperty;
+import me.bradleysteele.commons.util.Players;
 import me.bradleysteele.commons.util.reflect.Reflection;
 import org.apache.commons.codec.binary.Base64;
-import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.SkullMeta;
@@ -30,6 +32,8 @@ import java.util.UUID;
  */
 public class SkullBuilder extends ItemStackBuilder {
 
+    private static final String TEXTURES_JSON = "{ textures: { SKIN: { url: \"%s\" } } }";
+
     private String owner;
     private String url;
 
@@ -39,59 +43,79 @@ public class SkullBuilder extends ItemStackBuilder {
         this.owner = owner;
     }
 
+    protected SkullBuilder(ItemStack stack) {
+        super(stack);
+    }
+
+    protected SkullBuilder(SkullBuilder builder) {
+        super(builder);
+
+        owner = builder.owner;
+        url = builder.url;
+    }
+
     protected SkullBuilder() {
-        this(null);
+        this((String) null);
     }
 
     @Override
     public ItemStack build() {
-        ItemStack item = super.build();
-        SkullMeta meta = (SkullMeta) item.getItemMeta();
+        ItemStack stack = super.build();
+        SkullMeta meta = (SkullMeta) stack.getItemMeta();
 
         if (owner != null) {
             meta.setOwner(owner);
         }
 
         if (url != null) {
-            byte[] data = Base64.encodeBase64(String.format("{ textures: { SKIN: { url: \"%s\" } } }", url).getBytes());
-
-            // Temporary
-            Object profile = Reflection.newInstance(Reflection.getClass("com.mojang.authlib.GameProfile"), new Class[] { UUID.class, String.class }, UUID.randomUUID(), null);
-            Object map = Reflection.invokeMethod(Reflection.getMethod(profile.getClass(), "getProperties"), profile);
-
-            Object property = Reflection.newInstance(Reflection.getClass("com.mojang.authlib.properties.Property"), new Class[] { String.class, String.class }, "textures", new String(data));
-
-            Reflection.invokeMethod(Reflection.getMethod(map.getClass(), "put", Object.class, Object.class), map, "textures", property);
+            NMSGameProfile profile = new NMSGameProfile(UUID.randomUUID(), null);
+            profile.getProperties().put("textures", new NMSProperty("textures", new String(Base64.encodeBase64(String.format(TEXTURES_JSON, url).getBytes()))));
 
             // Apply to meta
-            Reflection.setFieldValue("profile", meta, profile);
+            Reflection.setFieldValue("profile", meta, profile.getNMSHandle());
         }
 
-        item.setItemMeta(meta);
+        stack.setItemMeta(meta);
 
         // NBTs must be applied AFTER meta is applied.
         for (Applier applier : this.getNBTAppliers()) {
-            item = applier.apply(item);
+            stack = applier.apply(stack);
         }
 
-        return item;
+        return stack;
     }
 
+    /**
+     * @param owner skull owner (player name).
+     * @return this skull builder.
+     */
     public SkullBuilder withOwner(String owner) {
         this.owner = owner;
         return this;
     }
 
+    /**
+     * @param player skull owner.
+     * @return this skull builder.
+     */
     public SkullBuilder withOwner(OfflinePlayer player) {
         this.owner = player.getName();
         return this;
     }
 
+    /**
+     * @param uuid skull owner's unique id.
+     * @return this skull builder.
+     */
     public SkullBuilder withOwner(UUID uuid) {
-        this.owner = Bukkit.getOfflinePlayer(uuid).getName();
+        this.owner = Players.getOfflinePlayer(uuid).getName();
         return this;
     }
 
+    /**
+     * @param url skin url.
+     * @return this skull builder.
+     */
     public SkullBuilder withURL(String url) {
         this.url = url;
         return this;
