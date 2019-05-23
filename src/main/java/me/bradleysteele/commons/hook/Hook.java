@@ -24,12 +24,14 @@ public interface Hook {
     /**
      * Attempts to hook onto the entity.
      *
+     * @return {@code true} if the hook was successful.
+     *
      * @throws Exception expects an exception to be thrown
      *                   when a hook fails, if no exception
      *                   is thrown, hook is assumed to be
      *                   successful.
      */
-    void hook() throws Exception;
+    boolean hook() throws Exception;
 
     /**
      * Unhooks from the entity.
