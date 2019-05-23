@@ -70,9 +70,11 @@ public final class Reflection {
 
     /**
      * @param name the fully qualified name of the desired class.
+     * @param <T>  class type.
      * @return the {@code Class} object for the class with the specified name.
      */
-    public static Class<?> getClass(String name) {
+    @SuppressWarnings("unchecked")
+    public static <T> Class<T> getClass(String name) {
         Class<?> clazz = null;
 
         try {
@@ -81,7 +83,7 @@ public final class Reflection {
             // Ignored
         }
 
-        return clazz;
+        return (Class<T>) clazz;
     }
 
     // Getters: Constructor
@@ -129,8 +131,9 @@ public final class Reflection {
 
         while (c != null && c != Object.class) {
             try {
-                if (c.getDeclaredField(name) != null) {
-                    field = c.getDeclaredField(name);
+                field = c.getDeclaredField(name);
+
+                if (field != null) {
                     setAccessible(field, true);
                     break;
                 }
@@ -191,12 +194,21 @@ public final class Reflection {
      */
     public static Method getMethod(Class<?> clazz, String name, Class<?>... parameterTypes) {
         Method method = null;
+        Class<?> c = clazz;
 
-        try {
-            method = clazz.getMethod(name, parameterTypes);
-            setAccessible(method, true);
-        } catch (NoSuchMethodException | NullPointerException | SecurityException  e) {
-            // Ignored
+        while (c != null && c != Object.class) {
+            try {
+                method = c.getDeclaredMethod(name, parameterTypes);
+
+                if (method != null) {
+                    setAccessible(method, true);
+                    break;
+                }
+            } catch (NoSuchMethodException | NullPointerException | SecurityException e) {
+                // Ignored
+            }
+
+            c = c.getSuperclass();
         }
 
         return method;
