@@ -37,7 +37,7 @@ public final class SystemInfos {
     public static OperatingSystem getOperatingSystem() {
         try {
             return system.getOperatingSystem();
-        } catch (Exception e) {
+        } catch (Throwable e) {
             StaticLog.error("Failed to receive OS information.");
             return null;
         }
@@ -46,7 +46,7 @@ public final class SystemInfos {
     public static HardwareAbstractionLayer getHardware() {
         try {
             return system.getHardware();
-        } catch (Exception e) {
+        } catch (Throwable e) {
             StaticLog.error("Failed to receive hardware information.");
             return null;
         }
