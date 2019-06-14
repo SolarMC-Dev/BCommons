@@ -42,7 +42,7 @@ public interface ResourceSection extends ResourceItem {
 
     ResourceSection getParent();
 
-    Object get(String path, Class<?> type, Object def);
+    <T> T get(String path, Class<T> type, T def);
 
     Set<String> getKeys(boolean deep);
 
@@ -74,7 +74,7 @@ public interface ResourceSection extends ResourceItem {
 
     // Defaults
 
-    default Object get(String path, Class<?> type) {
+    default <T> T get(String path, Class<T> type) {
         return get(path, type, null);
     }
 

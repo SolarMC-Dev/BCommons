@@ -95,14 +95,14 @@ public class ResourceYaml extends AbstractResource {
     }
 
     @Override
-    public Object get(String path, Class<?> type, Object def) {
+    public <T> T get(String path, Class<T> type, T def) {
         Object ret = root.get(path);
 
-        if (ret == null || ret.getClass().isInstance(type)) {
-            return def;
+        if (ret == null || !ret.getClass().isInstance(type)) {
+            return def; // default
         }
 
-        return ret;
+        return type.cast(ret);
     }
 
     @Override

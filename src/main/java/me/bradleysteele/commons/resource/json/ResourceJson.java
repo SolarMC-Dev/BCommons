@@ -23,7 +23,6 @@ import me.bradleysteele.commons.resource.AbstractResource;
 import me.bradleysteele.commons.resource.ResourceHandler;
 import me.bradleysteele.commons.resource.ResourceReference;
 import me.bradleysteele.commons.resource.ResourceSection;
-import me.bradleysteele.commons.util.reflect.Reflection;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -99,8 +98,14 @@ public class ResourceJson extends AbstractResource {
     }
 
     @Override
-    public Object get(String path, Class<?> type, Object def) {
-        throw new UnsupportedOperationException("use getConfiguration instead");
+    public <T> T get(String path, Class<T> type, T def) {
+        JsonElement element = root.get(path);
+
+        if (element == null) {
+            return def;
+        }
+
+        return StaticGson.GSON.fromJson(element, type);
     }
 
     @Override
@@ -171,27 +176,15 @@ public class ResourceJson extends AbstractResource {
             set(path, ((ResourceJson) object).getConfiguration());
         } else if (object instanceof JsonObject) {
             root.add(path, (JsonObject) object);
-        } else if (object instanceof List) {
-            JsonArray array = new JsonArray();
-
-            for (Object obj : (List) object) {
-                array.add(newJsonPrimitive(obj));
-            }
-
-            root.add(path, array);
+        } else if (object == null) {
+            root.add(path, JsonNull.INSTANCE);
         } else {
-            root.add(path, object == null ? JsonNull.INSTANCE : newJsonPrimitive(object));
+            root.add(path, StaticGson.GSON.toJsonTree(object));
         }
     }
 
     @Override
     public String toString() {
         return root.toString();
-    }
-
-    private final Class[] PARAM_TYPES = new Class[] { Object.class };
-
-    private JsonPrimitive newJsonPrimitive(Object object) {
-        return Reflection.newInstance(JsonPrimitive.class, PARAM_TYPES, object);
     }
 }
