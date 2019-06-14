@@ -16,6 +16,7 @@
 
 package me.bradleysteele.commons.gson;
 
+import com.google.gson.FieldNamingPolicy;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonParser;
@@ -34,6 +35,7 @@ import java.util.UUID;
 public final class StaticGson {
 
     private static final GsonBuilder GSON_BUILDER = new GsonBuilder()
+            .setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES)
             .registerTypeAdapter(ItemStack.class, new ItemStackAdapter())
             .registerTypeAdapter(ItemStack[].class, new ItemStackArrayAdapter())
             .registerTypeAdapter(Location.class, new LocationAdapter())
