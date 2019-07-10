@@ -41,20 +41,26 @@ public final class StaticGson {
             .registerTypeAdapter(Location.class, new LocationAdapter())
             .registerTypeAdapter(UUID.class, new UUIDAdapter());
 
-    public static final Gson GSON = GSON_BUILDER.create();
+    private static Gson GSON = GSON_BUILDER.create();
 
-    public static final Gson PRETTY_GSON = GSON_BUILDER
+    private static Gson GSON_PRETTY = GSON_BUILDER
             .setPrettyPrinting()
             .create();
 
     public static final JsonParser JSON_PARSER = new JsonParser();
+
+    private StaticGson() {}
 
     // Raw Gson
 
     /**
      * Raw Gson object, does not include default type adapters.
      */
-    public static final Gson RAW_GSON = new Gson();
+    private static final Gson RAW_GSON = new Gson();
+
+    public static Gson getRawGson() {
+        return RAW_GSON;
+    }
 
     /**
      * Raw Gson object with pretty printing, does not include default
@@ -64,6 +70,31 @@ public final class StaticGson {
             .setPrettyPrinting()
             .create();
 
-    private StaticGson() {}
+    public static Gson getRawGsonPretty() {
+        return RAW_GSON_PRETTY;
+    }
 
+    // BCommons Gson
+
+    public static Gson getGson() {
+        return GSON;
+    }
+
+    public static Gson getGsonPretty() {
+        return GSON_PRETTY;
+    }
+
+    public static <T> void registerTypeAdapter(Class<T> clazz, GsonAdapter<T> adapter) {
+        GSON_BUILDER.registerTypeAdapter(clazz, adapter);
+
+        // Rebuild Gson
+        GSON = GSON_BUILDER.create();
+        // TODO rebuild pretty
+    }
+
+    // Parser
+
+    public static JsonParser getJsonParser() {
+        return JSON_PARSER;
+    }
 }
