@@ -105,7 +105,7 @@ public class ResourceJson extends AbstractResource {
             return def;
         }
 
-        return StaticGson.GSON.fromJson(element, type);
+        return StaticGson.getGson().fromJson(element, type);
     }
 
     @Override
@@ -162,7 +162,7 @@ public class ResourceJson extends AbstractResource {
 
     @Override
     public <T> List<T> getList(String path, Class<T> clazz) {
-        return StaticGson.RAW_GSON.fromJson(root.getAsJsonArray(path), new TypeToken<ArrayList<T>>(){}.getType());
+        return StaticGson.getGson().fromJson(root.getAsJsonArray(path), new TypeToken<ArrayList<T>>(){}.getType());
     }
 
     @Override
@@ -179,7 +179,7 @@ public class ResourceJson extends AbstractResource {
         } else if (object == null) {
             root.add(path, JsonNull.INSTANCE);
         } else {
-            root.add(path, StaticGson.GSON.toJsonTree(object));
+            root.add(path, StaticGson.getGson().toJsonTree(object));
         }
     }
 
