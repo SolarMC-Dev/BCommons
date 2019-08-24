@@ -111,18 +111,6 @@ public final class ItemStacks {
     }
 
     /**
-     * Wraps the provided stack into an {@link NBTItemStack}.
-     *
-     * @param stack the stack to convert.
-     * @return wrapped NBT stack.
-     *
-     * @see NBTItemStack
-     */
-    public static NBTItemStack toNBTItemStack(ItemStack stack) {
-        return new NBTItemStack(stack);
-    }
-
-    /**
      * @param section resource section to unwrap.
      * @return item stack builder with attributes provided by
      *         the resource section.
@@ -156,6 +144,68 @@ public final class ItemStacks {
      */
     public static ItemStack toItemStack(ResourceSection section) {
         return toItemStackBuilder(section).build();
+    }
+
+    // NBT
+
+    /**
+     * Wraps the provided stack into an {@link NBTItemStack}.
+     *
+     * @param stack the stack to convert.
+     * @return wrapped NBT stack.
+     *
+     * @see NBTItemStack
+     */
+    public static NBTItemStack toNBTItemStack(ItemStack stack) {
+        return new NBTItemStack(stack);
+    }
+
+    public static boolean hasNBTKey(ItemStack stack, String key) {
+        return toNBTItemStack(stack).hasKey(key);
+    }
+
+    public static String getNBTString(ItemStack stack, String key) {
+        return toNBTItemStack(stack).getString(key);
+    }
+
+    public static Integer getNBTInteger(ItemStack stack, String key) {
+        return toNBTItemStack(stack).getInteger(key);
+    }
+
+    public static Double getNBTDouble(ItemStack stack, String key) {
+        return toNBTItemStack(stack).getDouble(key);
+    }
+
+    public static Boolean getNBTBoolean(ItemStack stack, String key) {
+        return toNBTItemStack(stack).getBoolean(key);
+    }
+
+    public static ItemStack setNBTString(ItemStack stack, String key, String value) {
+        NBTItemStack nbtStack = toNBTItemStack(stack);
+        nbtStack.setString(key, value);
+
+        return nbtStack.getItem();
+    }
+
+    public static ItemStack setNBTInteger(ItemStack stack, String key, Integer value) {
+        NBTItemStack nbtStack = toNBTItemStack(stack);
+        nbtStack.setInteger(key, value);
+
+        return nbtStack.getItem();
+    }
+
+    public static ItemStack setNBTDouble(ItemStack stack, String key, Double value) {
+        NBTItemStack nbtStack = toNBTItemStack(stack);
+        nbtStack.setDouble(key, value);
+
+        return nbtStack.getItem();
+    }
+
+    public static ItemStack setNBTBoolean(ItemStack stack, String key, Boolean value) {
+        NBTItemStack nbtStack = toNBTItemStack(stack);
+        nbtStack.setBoolean(key, value);
+
+        return nbtStack.getItem();
     }
 
     /**
@@ -202,6 +252,8 @@ public final class ItemStacks {
     public static boolean isPlayerHead(ItemStack stack) {
         return stack.getType() == PLAYER_HEAD && (!NMSReflection.isLegacy() || stack.getDurability() == 3);
     }
+
+    // Serialisation
 
     public static String serializeItems(ItemStack[] items) {
         try {
