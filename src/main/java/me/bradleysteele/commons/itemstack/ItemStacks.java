@@ -37,7 +37,16 @@ public final class ItemStacks {
     public static final Material PLAYER_HEAD;
 
     static {
-        PLAYER_HEAD = NMSReflection.isLegacy() ? Material.matchMaterial("SKULL_ITEM") : Material.matchMaterial("PLAYER_HEAD");
+        Material head = NMSReflection.isLegacy() ? Material.matchMaterial("SKULL_ITEM") : Material.matchMaterial("PLAYER_HEAD");
+
+        // Known issue on 1.14 for Material#matchMaterial to return
+        // null, manually retrieve it through Enum#valueOf if this
+        // is the case.
+        if (head == null) {
+            head = Enum.valueOf(Material.class, NMSReflection.isLegacy() ? "SKULL_ITEM" : "PLAYER_HEAD");
+        }
+
+        PLAYER_HEAD = head;
     }
 
     private ItemStacks() {}
