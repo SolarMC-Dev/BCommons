@@ -18,6 +18,7 @@ package me.bradleysteele.commons.inventory;
 
 import me.bradleysteele.commons.util.reflect.Reflection;
 import org.bukkit.Bukkit;
+import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
@@ -31,6 +32,7 @@ import java.util.Arrays;
 public final class Inventories {
 
     private static final Method METHOD_INVENTORY_GET_TITLE = Reflection.getMethod(Inventory.class, "getTitle");
+    private static final Method METHOD_INVENTORY_GET_STORAGE_CONTENTS = Reflection.getMethod(Inventory.class, "getStorageContents");
 
     private Inventories() {}
 
@@ -54,8 +56,21 @@ public final class Inventories {
      * @return new inventory with a cloned contents of the provided inventory.
      */
     public static Inventory clone(Inventory inventory, InventoryHolder holder, String title) {
-        Inventory inv = Bukkit.createInventory(holder, inventory.getSize(), title);
-        inv.setContents(inventory.getContents().clone());
+        int size = inventory.getSize();
+
+        // 1.14 #getSize() includes armour, shield & off-hand, causing issues
+        // as its not a multiple of 9.
+        if (inventory.getType() == InventoryType.PLAYER) {
+            size = 36;
+        }
+
+        Inventory inv = Bukkit.createInventory(holder, size, title);
+
+        if (METHOD_INVENTORY_GET_STORAGE_CONTENTS != null) {
+            inv.setContents(inventory.getStorageContents().clone());
+        } else {
+            inv.setContents(inventory.getContents().clone());
+        }
 
         return inv;
     }
@@ -69,7 +84,7 @@ public final class Inventories {
      * @return {@code true} if the item stack can fit in the inventory.
      */
     public static boolean fits(Inventory inventory, ItemStack... stacks) {
-        return clone(inventory, null).addItem(stacks).isEmpty();
+        return clone(inventory, null, "_").addItem(stacks).isEmpty();
     }
 
     /**
