@@ -22,7 +22,7 @@ package me.bradleysteele.commons.hook.dependency;
 public class MavenDependency extends Dependency {
 
     private static final String NAME = "%s-%s.jar";
-    private static final String DOWNLOAD_URL = "http://central.maven.org/maven2/%s/%s/%s/%s";
+    private static final String DOWNLOAD_URL = "https://search.maven.org/remotecontent?filepath=%s/%s/%s/%s";
 
     public MavenDependency(String pckg, String name, String version) {
         super(String.format(NAME, name, version), String.format(DOWNLOAD_URL, pckg.replace(".", "/"), name, version, String.format(NAME, name, version)));
