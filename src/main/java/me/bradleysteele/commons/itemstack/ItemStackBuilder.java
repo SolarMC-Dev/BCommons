@@ -21,6 +21,7 @@ import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import me.bradleysteele.commons.itemstack.nbt.NBTItemStack;
 import me.bradleysteele.commons.util.Messages;
+import me.bradleysteele.commons.util.reflect.Reflection;
 import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemFlag;
@@ -36,6 +37,8 @@ import java.util.Set;
  * @author Bradley Steele
  */
 public class ItemStackBuilder {
+
+    private static final boolean HAS_UNBREAKABLE = Reflection.hasMethod(ItemMeta.class, "setUnbreakable", boolean.class);
 
     // Stack
     private Material material;
@@ -106,7 +109,12 @@ public class ItemStackBuilder {
         if (meta != null) {
             meta.setDisplayName(displayName);
             meta.setLore(lore);
-            meta.spigot().setUnbreakable(unbreakable);
+
+            if (HAS_UNBREAKABLE) {
+                meta.setUnbreakable(unbreakable);
+            } else {
+                meta.spigot().setUnbreakable(unbreakable);
+            }
 
             meta.addItemFlags(itemFlags.toArray(new ItemFlag[0]));
             stack.setItemMeta(meta);
