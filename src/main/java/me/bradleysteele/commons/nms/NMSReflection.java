@@ -21,28 +21,25 @@ import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
 import java.lang.reflect.Method;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * @author Bradley Steele
  */
 public final class NMSReflection {
 
-    private static boolean LEGACY = false;
+    // Reflection cache
+    private static final ClassCache NMS_CLASS_CACHE;
+    private static final ClassCache CB_CLASS_CACHE = new ClassCache(String.format("org.bukkit.craftbukkit.%s", getPackageVersion()));
+
     static {
-        try {
-            Class.forName("org.bukkit.GameRule");
-        } catch (ClassNotFoundException e) {
-            LEGACY = true;
+        if (isOldPackageStructure()) {
+            NMS_CLASS_CACHE = new ClassCache(String.format("net.minecraft.server.%s", getPackageVersion()));
+        } else {
+            NMS_CLASS_CACHE = new ClassCache("net.minecraft");
         }
     }
-
-    // Package formats
-    private static final String NMS_FORMAT = "net.minecraft.server.%s";
-    private static final String CB_FORMAT = "org.bukkit.craftbukkit.%s";
-
-    // Reflection cache
-    private static final ClassCache NMS_CLASS_CACHE = new ClassCache(String.format(NMS_FORMAT, getPackageVersion()));
-    private static final ClassCache CB_CLASS_CACHE = new ClassCache(String.format(CB_FORMAT, getPackageVersion()));
 
 
     private NMSReflection() {}
@@ -51,7 +48,13 @@ public final class NMSReflection {
      * @return {@code true} if the server is legacy.
      */
     public static boolean isLegacy() {
-        return LEGACY;
+        // < 1.13 = "legacy" minecraft
+        return getPackageVersionFloat() < 1.13f;
+    }
+
+    public static boolean isOldPackageStructure() {
+        // >= 1.17 introduces new nsm package structure
+        return getPackageVersionFloat() < 1.17f;
     }
 
     private static String PACKAGE_VERSION;
@@ -63,9 +66,9 @@ public final class NMSReflection {
      */
     public static String getPackageVersion() {
         if (PACKAGE_VERSION == null) {
-            // [0] - net
-            // [1] - minecraft
-            // [2] - server
+            // [0] - net       | org
+            // [1] - minecraft | bukkit
+            // [2] - server    | craftbukkit
             // [3] - VERSION
             PACKAGE_VERSION = Bukkit.getServer().getClass()
                     .getPackage()
@@ -74,6 +77,29 @@ public final class NMSReflection {
         }
 
         return PACKAGE_VERSION;
+    }
+
+    private static Float PACKAGE_VERSION_FLOAT;
+
+    /**
+     * @return minecraft server package version.
+     */
+    public static float getPackageVersionFloat() {
+        if (PACKAGE_VERSION_FLOAT == null) {
+            Pattern pattern = Pattern.compile("[v]?(1_[0-9]+)");
+            Matcher matcher = pattern.matcher(getPackageVersion());
+
+            if (!matcher.find()) {
+                throw new RuntimeException(String.format("failed to match package version from '%s'", getPackageVersion()));
+            }
+
+            PACKAGE_VERSION_FLOAT = Float.parseFloat(
+                    // 1_17 -> 1.17
+                    matcher.group(1).replace("_", ".")
+            );
+        }
+
+        return PACKAGE_VERSION_FLOAT;
     }
 
     /**
@@ -92,13 +118,15 @@ public final class NMSReflection {
         return CB_CLASS_CACHE.getAndCache(name);
     }
 
-    // Util
+    // Common
 
     /**
      * @return nms EntityPlayer class.
      */
     public static Class<?> getEntityPlayer() {
-        return getNMSClass("EntityPlayer");
+        return isOldPackageStructure()
+                ? getNMSClass("EntityPlayer")
+                : getNMSClass("server.level.EntityPlayer");
     }
 
     private static Method METHOD_CRAFT_PLAYER_GET_HANDLE;

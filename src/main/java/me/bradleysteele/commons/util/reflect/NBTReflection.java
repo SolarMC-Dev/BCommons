@@ -19,8 +19,8 @@ package me.bradleysteele.commons.util.reflect;
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 import me.bradleysteele.commons.itemstack.nbt.NBTCompound;
+import me.bradleysteele.commons.nms.NMSReflection;
 import me.bradleysteele.commons.util.logging.StaticLog;
-import org.bukkit.Bukkit;
 import org.bukkit.inventory.ItemStack;
 
 import java.lang.reflect.Method;
@@ -37,47 +37,24 @@ import java.util.Stack;
 public final class NBTReflection {
 
     private static final Gson gson = new Gson();
-    private static final String version;
-    private static boolean legacy;
 
     static {
-        version = Bukkit.getServer().getClass().getPackage().getName()
-                .replace(".", ",")
-                .split(",")[3];
-
-        try {
-            Class.forName("org.bukkit.GameRule");
-            legacy = false;
-        } catch (ClassNotFoundException e) {
-            legacy = true;
+        if (NMSReflection.isOldPackageStructure()) {
+            NBT_BASE = NMSReflection.getNMSClass("NBTBase");
+            NBT_TAG_COMPOUND = NMSReflection.getNMSClass("NBTTagCompound");
+            NMS_ITEM_STACK = NMSReflection.getNMSClass("ItemStack");
+        } else {
+            NBT_BASE = NMSReflection.getNMSClass("nbt.NBTBase");
+            NBT_TAG_COMPOUND = NMSReflection.getNMSClass("nbt.NBTTagCompound");
+            NMS_ITEM_STACK = NMSReflection.getNMSClass("world.item.ItemStack");
         }
     }
 
-    /**
-     * @deprecated will be removed in future builds.
-     *
-     * @return the minecraft server package version.
-     */
-    @Deprecated
-    public static String getPackageVersion() {
-        return version;
-    }
-
-    /**
-     * @deprecated will be removed in future builds.
-     *
-     * @return {@code true} if this version is legacy.
-     */
-    @Deprecated
-    public static boolean isLegacy() {
-        return legacy;
-    }
-
     // NBTBase
-    private static final Class<?> NBT_BASE = Reflection.getClass("net.minecraft.server." + version + ".NBTBase");
+    private static final Class<?> NBT_BASE;
 
     // NBTTagCompound
-    private static final Class<?> NBT_TAG_COMPOUND = Reflection.getClass("net.minecraft.server." + version + ".NBTTagCompound");
+    private static final Class<?> NBT_TAG_COMPOUND;
 
     private static final Method NTC_REMOVE = Reflection.getMethod(NBT_TAG_COMPOUND, "remove", String.class);
     private static final Method NTC_HAS_KEY = Reflection.getMethod(NBT_TAG_COMPOUND, "hasKey", String.class);
@@ -94,12 +71,12 @@ public final class NBTReflection {
     private static final Method NTC_SET_BOOLEAN = Reflection.getMethod(NBT_TAG_COMPOUND, "setBoolean", String.class, boolean.class);
 
     // NMS ItemStack
-    private static final Class<?> NMS_ITEM_STACK = Reflection.getClass("net.minecraft.server." + version + ".ItemStack");
+    private static final Class<?> NMS_ITEM_STACK;
     private static final Method NIS_GET_TAG = Reflection.getMethod(NMS_ITEM_STACK, "getTag");
     private static final Method NIS_SET_TAG = Reflection.getMethod(NMS_ITEM_STACK, "setTag", NBT_TAG_COMPOUND);
 
     // CraftItemStack
-    private static final Class<?> CRAFT_ITEM_STACK = Reflection.getClass("org.bukkit.craftbukkit." + version + ".inventory.CraftItemStack");
+    private static final Class<?> CRAFT_ITEM_STACK = NMSReflection.getCBClass("inventory.CraftItemStack");
     private static final Method CIS_AS_CRAFT_MIRROR = Reflection.getMethod(CRAFT_ITEM_STACK, "asCraftMirror", NMS_ITEM_STACK);
     private static final Method CIS_AS_NMS_COPY = Reflection.getMethod(CRAFT_ITEM_STACK, "asNMSCopy", ItemStack.class);
 
