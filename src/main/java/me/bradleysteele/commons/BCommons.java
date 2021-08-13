@@ -30,6 +30,7 @@ import java.util.logging.Logger;
 public class BCommons extends BPlugin {
 
     public BCommons() {
+/* Solar start
         this.register(DependencyLoader.class);
 
         DependencyLoader.get().load(
@@ -45,6 +46,7 @@ public class BCommons extends BPlugin {
                 new MavenDependency("net.java.dev.jna", "jna-platform", "5.3.1"),
                 new MavenDependency("org.slf4j", "slf4j-api", "1.7.25")
         );
+*/ // Solar end
     }
 
     @Override

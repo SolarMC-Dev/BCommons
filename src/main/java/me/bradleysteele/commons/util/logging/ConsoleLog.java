@@ -19,6 +19,7 @@ package me.bradleysteele.commons.util.logging;
 import me.bradleysteele.commons.util.Messages;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.slf4j.LoggerFactory; // Solar
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -37,7 +38,7 @@ public class ConsoleLog {
      *                in the format string.
      */
     public void log(String message, Object... args) {
-        Bukkit.getConsoleSender().sendMessage(String.format(message, args));
+        LoggerFactory.getLogger(getClass()).info(String.format(message, args));
     }
 
     /**

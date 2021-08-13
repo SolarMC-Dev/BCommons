@@ -4,6 +4,13 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
+<!-- Solar start -->
+    <parent>
+        <groupId>gg.solarmc</groupId>
+        <artifactId>solar-parent</artifactId>
+        <version>0.6.2</version>
+    </parent>
+<!-- Solar end -->
     <groupId>me.bradleysteele</groupId>
     <artifactId>commons</artifactId>
     <version>0.3.0</version>
@@ -38,6 +45,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
 
+<!-- Solar start
     <distributionManagement>
         <snapshotRepository>
             <id>ossrh</id>
@@ -59,14 +67,31 @@
             <url>https://oss.sonatype.org/content/repositories/snapshots/</url>
         </repository>
     </repositories>
+-->
+    <repositories>
+        <repository>
+            <id>solar-releases</id>
+            <url>https://mvn-repo.solarmc.gg/releases</url>
+        </repository>
+    </repositories>
+<!-- Solar end -->
 
     <dependencies>
+<!-- Solar start
         <dependency>
             <groupId>org.spigotmc</groupId>
             <artifactId>spigot-api</artifactId>
             <version>1.14.4-R0.1-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
+-->
+        <dependency>
+            <groupId>gg.solarmc.paper</groupId>
+            <artifactId>solarpaper-api</artifactId>
+            <version>1.2.0</version>
+            <scope>provided</scope>
+        </dependency>
+<!-- Solar end -->
         <dependency>
             <groupId>com.github.oshi</groupId>
             <artifactId>oshi-core</artifactId>
@@ -92,12 +117,13 @@
         <plugins>
             <plugin>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.3</version>
+                <!-- <version>3.3</version> --> <!-- Solar -->
                 <configuration>
                     <source>1.8</source>
                     <target>1.8</target>
                 </configuration>
             </plugin>
+<!-- Solar start
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-jar-plugin</artifactId>
@@ -111,6 +137,19 @@
                     </archive>
                 </configuration>
             </plugin>
+-->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-shade-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>shade</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+<!-- Solar end -->
         </plugins>
     </build>
     

@@ -20,6 +20,7 @@ import me.bradleysteele.commons.util.logging.StaticLog;
 import me.bradleysteele.commons.util.reflect.Reflection;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
+import org.bukkit.command.CommandMap;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.SimpleCommandMap;
 
@@ -31,11 +32,17 @@ import java.util.List;
  */
 public class BCommandBukkit extends Command {
 
+/* Solar start
     private static final Field COMMAND_MAP = Reflection.getField(Bukkit.getServer().getClass(), "commandMap");
+*/
 
-    public static SimpleCommandMap getCommandMap() {
+    public static CommandMap getCommandMap() {
+        return Bukkit.getServer().getCommandMap();
+/*
         return Reflection.getFieldValue(COMMAND_MAP, Bukkit.getServer());
+*/
     }
+// Solar end
 
     private final BCommand command;
 
