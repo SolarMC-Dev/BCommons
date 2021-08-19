@@ -16,16 +16,19 @@
 
 package me.bradleysteele.commons.util;
 
+/* Solar start
 import me.bradleysteele.commons.util.logging.StaticLog;
 import oshi.SystemInfo;
 import oshi.hardware.HardwareAbstractionLayer;
 import oshi.software.os.OperatingSystem;
+*/ // Solar end
 
 /**
  * @author Bradley Steele
  */
 public final class SystemInfos {
 
+/* Solar start - clear whole class
     private static final SystemInfo system = new SystemInfo();
 
     private SystemInfos() {}
@@ -51,4 +54,5 @@ public final class SystemInfos {
             return null;
         }
     }
+*/ // Solar end
 }

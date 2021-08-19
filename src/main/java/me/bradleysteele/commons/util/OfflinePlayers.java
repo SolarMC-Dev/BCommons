@@ -23,13 +23,17 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import org.apache.http.HttpResponse;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClientBuilder;
-import org.apache.http.util.EntityUtils;
+import com.google.gson.JsonSyntaxException;
 
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.http.HttpClient; // Solar
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 import java.util.UUID;
@@ -40,8 +44,9 @@ import java.util.concurrent.TimeUnit;
  */
 public final class OfflinePlayers {
 
+/* Solar start - remove main-thread blocking code
     private static final JsonParser parser = new JsonParser();
-    private static final CloseableHttpClient client = HttpClientBuilder.create().build();
+    private static final HttpClient client = HttpClient.newHttpClient(); // Solar
 
     private static final String ENDPOINT_SESSIONSERVER = "https://sessionserver.mojang.com/session/minecraft/profile/%s";
     private static final String ENDPOINT_PROFILES_NAMES = "https://api.mojang.com/user/profiles/%s/names";
@@ -105,6 +110,7 @@ public final class OfflinePlayers {
 
         return null;
     }
+*/ // Solar end
 
     /**
      * Attempts to retrieve the latest name associated with the
@@ -118,6 +124,7 @@ public final class OfflinePlayers {
      * @return the players name or the fallback if it could not be
      *         retrieved.
      */
+/* Solar start - remove main thread-blocking code
     public static String getName(UUID uuid, String fallback) {
         String name = Players.getOfflinePlayer(uuid).getName();
 
@@ -159,7 +166,26 @@ public final class OfflinePlayers {
     }
 
     private static JsonElement getResponse(String url) throws IOException {
-        HttpResponse response = client.execute(new HttpGet(url));
-        return parser.parse(EntityUtils.toString(response.getEntity(), StandardCharsets.UTF_8));
+        HttpResponse<InputStream> response;
+        try {
+            response = client.send(
+                    HttpRequest.newBuilder(new URI(url)).GET().build(),
+                    HttpResponse.BodyHandlers.ofInputStream());
+        } catch (URISyntaxException ex) {
+            throw new IllegalArgumentException(ex);
+        } catch (InterruptedException ex) {
+            Thread.currentThread().interrupt();
+            throw new RuntimeException(ex);
+        }
+        if (response.statusCode() != 200) {
+            throw new IOException("Response code is " + response.statusCode());
+        }
+        try (InputStream input = response.body();
+             Reader reader = new InputStreamReader(input, StandardCharsets.UTF_8)) {
+            return JsonParser.parseReader(reader);
+        } catch (JsonSyntaxException syntaxException) {
+            throw new IOException("Unable to parse json", syntaxException);
+        }
     }
+*/ // Solar end
 }

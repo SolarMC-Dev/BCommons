@@ -29,8 +29,10 @@ import me.bradleysteele.commons.util.reflect.Reflection;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.java.JavaPlugin;
+/* Solar start
 import oshi.hardware.HardwareAbstractionLayer;
 import oshi.software.os.OperatingSystem;
+*/ // Solar end
 
 import java.util.Collections;
 import java.util.List;
@@ -50,8 +52,10 @@ public abstract class BPlugin extends JavaPlugin {
     protected ResourceProvider resourceProvider;
     protected final ConsoleLog console = new ConsoleLog();
 
+/* Solar start
     private OperatingSystem os;
     private HardwareAbstractionLayer hal;
+*/ // Solar end
 
     // Semi abstract
 
@@ -84,8 +88,10 @@ public abstract class BPlugin extends JavaPlugin {
     @Override
     public final void onLoad() {
         // Pre-load SystemInfo
+/* Solar start
         os = SystemInfos.getOperatingSystem();
         hal = SystemInfos.getHardware();
+*/ // Solar end
 
         description = getDescription();
         resourceProvider = new DefaultResourceProvider(this);
@@ -275,19 +281,7 @@ public abstract class BPlugin extends JavaPlugin {
         return console;
     }
 
-    /**
-     * @return the system's operating system info.
-     */
-    public OperatingSystem getOperatingSystem() {
-        return os;
-    }
-
-    /**
-     * @return the system's hardware info.
-     */
-    public HardwareAbstractionLayer getHardware() {
-        return hal;
-    }
+// Solar - remove getOperatingSystem and getHardware
 
     /**
      * @param resourceProvider the plugin's resource provider.
